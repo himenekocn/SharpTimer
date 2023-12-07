@@ -7,12 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="CounterStrikeSharp.API">
-       <HintPath>/path/to/CounterStrikeSharp.API.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
+    <PackageReference Include="CounterStrikeSharp.API" Version="*" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Nexd.MySQL" Version="1.0.2" />
   </ItemGroup>
 
