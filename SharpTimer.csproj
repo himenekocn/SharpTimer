@@ -10,6 +10,7 @@
     <PackageReference Include="CounterStrikeSharp.API" Version="*" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Nexd.MySQL" Version="1.0.2" />
+    <PackageReference Include="MySqlConnector" Version="2.3.1" />
   </ItemGroup>
 
 </Project>
