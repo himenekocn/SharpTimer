@@ -35,6 +35,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build ${{ env.PROJECT_PATH }} -c SharpTimer -o ${{ env.OUTPUT_PATH }}
+    - name: Uploading package
+      uses: actions/upload-artifact@v3.1.3
+      with:
+        name: SharpTimer-${{ env.BUILD_NUMBER }}
+        path: ${{ env.OUTPUT_PATH }}
 
   publish:
     if: github.event_name == 'push'
