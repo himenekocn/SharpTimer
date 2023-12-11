@@ -5,11 +5,9 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 
 [**MetaMod**](https://cs2.poggu.me/metamod/installation/)
 
-[**CounterStrikeSharp** *(at least v84)*](https://github.com/roflmuffin/CounterStrikeSharp/releases)
+[**CounterStrikeSharp** *(at least v116)*](https://github.com/roflmuffin/CounterStrikeSharp/releases)
 
 [**MovementUnlocker** *(optional but recommended)*](https://github.com/Source2ZE/MovementUnlocker)
-
-⚠️ **Linux only**
 
 ⚠️ **CS2Fixes** does clash with **CSS** there fore the plugin might not work correctly with it
 
@@ -64,13 +62,10 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 ### Installing
 
 * Unzip into your servers `game/csgo/` dir
+  
+
 * Its recommended to have a custom server cfg with your desired settings (for example surf or kz)
 
-  [Example Surf Cfg](https://github.com/DEAFPS/cs-cfg/blob/main/surf.cfg)
-
-  [Example KZ Cfg](https://github.com/DEAFPS/cs-cfg/blob/main/kz.cfg)
-
-  
 * Here a collection of maps supported by default: https://steamcommunity.com/sharedfiles/filedetails/?id=3095738559
 
 # Commands
@@ -80,14 +75,30 @@ SharpTimer is a simple Surf/KZ/Bhop/MG/Deathrun/etc. CS2 Timer plugin using Coun
 | `!r`  | Teleports the player back to Spawn |
 | `!top`  | Prints the top 10 times on the current map |
 | `!rank` | Tells you your rank on the current map |
+| `!pb` | Tells you your PB on the current map |
+| `!hud` | Hides the Timer HUD |
+| `!azerty` | Changes Key Layout to Azerty on the HUD |
 | `!cp` | Sets a checkpoint |
 | `!tp` | Teleports the player to the latest checkpoint |
 | `!prevcp` | Teleports the player to the previous checkpoint |
 | `!nextcp` | Teleports the player to the previous checkpoint |
 
+# Server Console Commands
+
+| Command  | What it does |
+| ------------- | ------------- |
+| `css_jsontodatabase`  | Uploads all saved Records to the MySql Database from the local Json |
+| `css_databasetojson`  | Downloads all saved Records from the MySql Database to Json |
+
 ### Configuration
 * See `game/csgo/cfg/SharpTimer/config.cfg` for basic plugin configuration *(yes you can enable checkpoints there)*
+  
 * You can add custom server settings to `game/csgo/cfg/SharpTimer/custom_exec.cfg`
+  
+  [Example Surf Cfg](https://github.com/DEAFPS/cs-cfg/blob/main/surf.cfg)
+
+  [Example KZ Cfg](https://github.com/DEAFPS/cs-cfg/blob/main/kz.cfg)
+  
 * This plugin will look for `timer_startzone` & `timer_endzone` triggers by default, if the map uses different trigger targetnames or does not have triggers at all (most bhop and deathrun maps dont) you will have to add them into the `mapdata.json`
 
 * To add Map Start and End zones you can simply add the `targetnames` of the triggers in the `mapdata.json` inside of `game/csgo/cfg/SharpTimer/` using `MapStartTrigger` and  `MapEndTrigger`
