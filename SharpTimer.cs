@@ -129,21 +129,22 @@ namespace SharpTimer
 
                     if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}Player {ChatColors.Red}{player.PlayerName} {ChatColors.White}connected!");
 
-                    player.PrintToChat($"{msgPrefix}Welcome {ChatColors.Red}{player.PlayerName} {ChatColors.White}to the server!");
+                    player.PrintToChat($"{msgPrefix}欢迎 {ChatColors.Red}{player.PlayerName} {ChatColors.White}来到服务器喵!");
 
-                    player.PrintToChat($"{msgPrefix}Available Commands:");
+                    player.PrintToChat($"{msgPrefix}服务器可用指令:");
 
-                    if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
-                    if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
-                    if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - Shows your current rank");
-                    if (pbComEnabled) player.PrintToChat($"{msgPrefix}!pb (css_pb) - Shows your current PB");
+                    if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - 重生");
+                    if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - 列出服务器TOP10玩家");
+                    if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - 显示你的排行");
+                    if (pbComEnabled) player.PrintToChat($"{msgPrefix}!pb (css_pb) - 显示你的当前PB");
 
                     if (cpEnabled)
                     {
-                        player.PrintToChat($"{msgPrefix}!cp (css_cp) - Sets a Checkpoint");
-                        player.PrintToChat($"{msgPrefix}!tp (css_tp) - Teleports you to the last Checkpoint");
-                        player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - Teleports you to the previous Checkpoint");
-                        player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you to the next Checkpoint");
+                        player.PrintToChat($"{msgPrefix}!cp (css_cp) - 设置一个记录点");
+                        player.PrintToChat($"{msgPrefix}!tp (css_tp) - 传送到最后一个记录点");
+                        player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - 传送到上一个记录点");
+                        player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - 传送到下一个记录点");
+                        player.PrintToChat($"{msgPrefix}可使用控制台输入 bind 按键 xxx 来进行绑键， xxx为上述指令括号内代码");
                     }
 
                     _ = HandleSetPlayerPlacementWithTotal(player, player.SteamID.ToString(), player.Slot);
@@ -226,28 +227,30 @@ namespace SharpTimer
                         {
                             if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
                                 $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='green'>{playerTime}</font><br>" +
-                                $"<font color='white'>Speed:</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
+                                $"<font color='white'>速度</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
                                 $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank}</font><br>" +
                                 $"<font color='white'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                                $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+                                $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font><br>" +
+                                $"<font class='fontSize-s' color='skyblue'>himeneko.cn</font><br>");
 
                             playerTimers[player.Slot].TimerTicks++;
                         }
                         else
                         {
                             if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
-                                $"<font color='white'>Speed:</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
+                                $"<font color='white'>速度</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
                                 $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank}</font><br>" +
                                 $"<font color='white'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
                                 $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                                $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+                                $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font><br>" +
+                                $"<font class='fontSize-s' color='skyblue'>himeneko.cn</font><br>");
                         }
 
                         if (!useTriggers)
@@ -400,15 +403,15 @@ namespace SharpTimer
 
             if (currentTicks < previousRecordTicks)
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Green}[{FormatTime(currentTicks)}]! {timeDifference}");
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}完成地图用时: {ChatColors.Green}[{FormatTime(currentTicks)}]! {timeDifference}");
             }
             else if (currentTicks > previousRecordTicks)
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ifFirstTimeColor}[{FormatTime(currentTicks)}]! {timeDifference}");
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}完成地图用时: {ifFirstTimeColor}[{FormatTime(currentTicks)}]! {timeDifference}");
             }
             else
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
+                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}完成地图用时: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
             }
 
             if (useMySQL == false) _ = HandleSetPlayerPlacementWithTotal(player, player.SteamID.ToString(), player.Slot);
@@ -429,7 +432,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -455,7 +458,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -464,14 +467,14 @@ namespace SharpTimer
             if (playerTimers[player.Slot].HideTimerHud == true)
             {
                 playerTimers[player.Slot].HideTimerHud = false;
-                player.PrintToChat($"Hide Timer HUD set to: {ChatColors.Green}{playerTimers[player.Slot].HideTimerHud}");
+                player.PrintToChat($"HUD隐藏设置为: {ChatColors.Green}{playerTimers[player.Slot].HideTimerHud}");
                 SavePlayerSettingToDatabase(player.SteamID.ToString(), "DrawTimerHud", false);
                 return;
             }
             else
             {
                 playerTimers[player.Slot].HideTimerHud = true;
-                player.PrintToChat($"Hide Timer HUD set to: {ChatColors.Green}{playerTimers[player.Slot].HideTimerHud}");
+                player.PrintToChat($"HUD隐藏设置为: {ChatColors.Green}{playerTimers[player.Slot].HideTimerHud}");
                 SavePlayerSettingToDatabase(player.SteamID.ToString(), "DrawTimerHud", true);
                 return;
             }
@@ -485,7 +488,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -508,13 +511,13 @@ namespace SharpTimer
 
             if (sortedRecords.Count == 0)
             {
-                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" No records available for {currentMapName}."));
+                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" {currentMapName} 没有任何记录."));
                 //ReplyToPlayer(player, msgPrefix + $" No records available for {currentMapName}.");
                 return;
             }
 
 
-            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Top 10 Records for {currentMapName}:"));
+            Server.NextFrame(() => player.PrintToChat(msgPrefix + $"{currentMapName} 的TOP10:"));
             //ReplyToPlayer(player, msgPrefix + $" Top 10 Records for {currentMapName}:");
             int rank = 1;
 
@@ -540,7 +543,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -553,7 +556,7 @@ namespace SharpTimer
 
             playerTimers[playerSlot].TimerRank = ranking;
 
-            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ChatColors.Green}{ranking}"));
+            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" 你当前排行 {ChatColors.Green}{ranking}"));
         }
 
         [ConsoleCommand("css_pb", "Tells you your pb on this map")]
@@ -564,7 +567,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -585,7 +588,7 @@ namespace SharpTimer
 
             playerTimers[playerSlot].PB = FormatTime(pbTicks);
 
-            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ChatColors.Green}{FormatTime(pbTicks)}"));
+            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" 你当前为 {ChatColors.Green}{FormatTime(pbTicks)}"));
         }
 
         [ConsoleCommand("css_pb", "Tells you the Server record on this map")]
@@ -596,7 +599,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -620,7 +623,7 @@ namespace SharpTimer
                 return;
             }
 
-            Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} Current Server Record on {ChatColors.Green}{currentMapName}{ChatColors.White}: "));
+            Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix}{ChatColors.Green}{currentMapName}{ChatColors.White} 的当前服务器记录: "));
 
             foreach (var kvp in sortedRecords.Take(1))
             {
@@ -639,7 +642,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -647,7 +650,7 @@ namespace SharpTimer
 
             if (currentRespawnPos == new Vector(0, 0, 0))
             {
-                player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
+                player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} 未找到当前地图的重生点!");
                 return;
             }
 
@@ -676,13 +679,13 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
             if (!player.PlayerPawn.Value.OnGroundLastTick && removeCpRestrictEnabled == false)
             {
-                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed}Cant set checkpoint while in air");
+                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed}不可以在空中设置记录点哦");
                 player.ExecuteClientCommand($"play {cpSoundAir}");
                 return;
             }
@@ -716,7 +719,7 @@ namespace SharpTimer
             int checkpointCount = playerCheckpoints[player.Slot].Count;
 
             // Print the chat message with the checkpoint count
-            player.PrintToChat(msgPrefix + $"Checkpoint set! {ChatColors.Green}#{checkpointCount}");
+            player.PrintToChat(msgPrefix + $"记录点已设置! {ChatColors.Green}#{checkpointCount}");
             player.ExecuteClientCommand($"play {cpSound}");
         }
 
@@ -728,7 +731,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -737,7 +740,7 @@ namespace SharpTimer
             // Check if the player has any checkpoints
             if (!playerCheckpoints.ContainsKey(player.Slot) || playerCheckpoints[player.Slot].Count == 0)
             {
-                player.PrintToChat(msgPrefix + "No checkpoints set!");
+                player.PrintToChat(msgPrefix + "没有记录点!");
                 return;
             }
 
@@ -761,7 +764,7 @@ namespace SharpTimer
 
             // Play a sound or provide feedback to the player
             player.ExecuteClientCommand($"play {tpSound}");
-            player.PrintToChat(msgPrefix + "Teleported to most recent checkpoint!");
+            player.PrintToChat(msgPrefix + "传送到最近的记录点!");
         }
 
         [ConsoleCommand("css_prevcp", "Tp to the previous checkpoint")]
@@ -772,7 +775,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -780,7 +783,7 @@ namespace SharpTimer
 
             if (!playerCheckpoints.TryGetValue(player.Slot, out List<PlayerCheckpoint> checkpoints) || checkpoints.Count == 0)
             {
-                player.PrintToChat(msgPrefix + "No checkpoints set!");
+                player.PrintToChat(msgPrefix + "没有记录点!");
                 return;
             }
 
@@ -809,7 +812,7 @@ namespace SharpTimer
 
                 // Play a sound or provide feedback to the player
                 player.ExecuteClientCommand($"play {tpSound}");
-                player.PrintToChat(msgPrefix + "Teleported to the previous checkpoint!");
+                player.PrintToChat(msgPrefix + "传送到上一个记录点!");
             }
         }
 
@@ -821,7 +824,7 @@ namespace SharpTimer
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                player.PrintToChat(msgPrefix + $" 指令冷却中喵~. Chill...");
                 return;
             }
 
@@ -829,7 +832,7 @@ namespace SharpTimer
 
             if (!playerCheckpoints.TryGetValue(player.Slot, out List<PlayerCheckpoint> checkpoints) || checkpoints.Count == 0)
             {
-                player.PrintToChat(msgPrefix + "No checkpoints set!");
+                player.PrintToChat(msgPrefix + "没有记录点!");
                 return;
             }
 
