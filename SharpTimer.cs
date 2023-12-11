@@ -3,7 +3,6 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
@@ -12,7 +11,7 @@ using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace SharpTimer
 {
-    [MinimumApiVersion(110)]
+    [MinimumApiVersion(116)]
     public class MapInfo
     {
         public string? MapStartTrigger { get; set; }
@@ -132,7 +131,7 @@ namespace SharpTimer
 
                     player.PrintToChat($"{msgPrefix}Welcome {ChatColors.Red}{player.PlayerName} {ChatColors.White}to the server!");
 
-                    player.PrintToChat($"{msgPrefix}Avalible Commands:");
+                    player.PrintToChat($"{msgPrefix}Available Commands:");
 
                     if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
                     if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
@@ -191,7 +190,6 @@ namespace SharpTimer
                         connectedPlayers.Remove(player.Slot);
                         playerTimers.Remove(player.Slot);
                         Console.WriteLine($"Removed player {connectedPlayer.PlayerName} with UserID {connectedPlayer.UserId} from connectedPlayers");
-                        Console.WriteLine(string.Join(", ", connectedPlayers.Values));
 
                         if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}Player {ChatColors.Red}{connectedPlayer.PlayerName} {ChatColors.White}disconnected!");
                     }
@@ -226,7 +224,7 @@ namespace SharpTimer
 
                         if (playerTimers[player.Slot].IsTimerRunning)
                         {
-                            if(playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
+                            if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
                                 $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='green'>{playerTime}</font><br>" +
                                 $"<font color='white'>Speed:</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
                                 $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank}</font><br>" +
@@ -241,7 +239,7 @@ namespace SharpTimer
                         }
                         else
                         {
-                            if(playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
+                            if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
                                 $"<font color='white'>Speed:</font> <font color='orange'>{formattedPlayerVel}</font><br>" +
                                 $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank}</font><br>" +
                                 $"<font color='white'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
@@ -267,74 +265,77 @@ namespace SharpTimer
                 }
             });
 
-            VirtualFunctions.CBaseTrigger_StartTouchFunc.Hook(h =>
-            {
-                var trigger = h.GetParam<CBaseTrigger>(0);
-                var entity = h.GetParam<CBaseEntity>(1);
-
-                if (trigger.DesignerName != "trigger_multiple" || entity.DesignerName != "player" || useTriggers == false)
-                    return HookResult.Continue;
-
-                var player = new CCSPlayerController(new CCSPlayerPawn(entity.Handle).Controller.Value.Handle);
-                if (player == null) return HookResult.Continue;
-                if (!connectedPlayers.ContainsKey(player.Slot))
-                    return HookResult.Continue;  // Player not in connectedPlayers, do nothing
-
-                if (trigger.DesignerName == "trigger_multiple" && trigger.Entity.Name == currentMapEndTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot) && playerTimers[player.Slot].IsTimerRunning)
-                {
-                    OnTimerStop(player);
-                    return HookResult.Continue;
-                }
-
-                if (trigger.DesignerName == "trigger_multiple" && trigger.Entity.Name == currentMapStartTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot))
-                {
-                    OnTimerStart(player);
-                    return HookResult.Continue;
-                }
-
-                return HookResult.Continue;
-            }, HookMode.Post);
-
-            VirtualFunctions.CBaseTrigger_EndTouchFunc.Hook(h =>
-            {
-                var trigger = h.GetParam<CBaseTrigger>(0);
-                var entity = h.GetParam<CBaseEntity>(1);
-
-                if (resetTriggerTeleportSpeedEnabled == true)
-                {
-                    if (!(trigger.DesignerName == "trigger_multiple" || trigger.DesignerName == "trigger_teleport") || entity.DesignerName != "player" || useTriggers == false)
-                        return HookResult.Continue;
-                }
-                else
-                {
-                    if (trigger.DesignerName != "trigger_multiple" || entity.DesignerName != "player" || useTriggers == false)
-                        return HookResult.Continue;
-                }
-
-                var player = new CCSPlayerController(new CCSPlayerPawn(entity.Handle).Controller.Value.Handle);
-                if (player == null) return HookResult.Continue;
-                if (!connectedPlayers.ContainsKey(player.Slot))
-                    return HookResult.Continue;  // Player not in connectedPlayers, do nothing
-
-                if (trigger.Entity.Name == currentMapStartTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot))
-                {
-                    OnTimerStart(player);
-
-                    if (maxStartingSpeedEnabled == true && (float)Math.Sqrt(player.PlayerPawn.Value.AbsVelocity.X * player.PlayerPawn.Value.AbsVelocity.X + player.PlayerPawn.Value.AbsVelocity.Y * player.PlayerPawn.Value.AbsVelocity.Y + player.PlayerPawn.Value.AbsVelocity.Z * player.PlayerPawn.Value.AbsVelocity.Z) > maxStartingSpeed)
+            HookEntityOutput("trigger_multiple", "OnStartTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        AdjustPlayerVelocity(player, maxStartingSpeed);
-                    }
-                    return HookResult.Continue;
-                }
+                        if (activator.DesignerName != "player" || useTriggers == false)
+                            return HookResult.Continue;
 
-                if (trigger.DesignerName == "trigger_teleport" && player.IsValid)
-                {
-                    if (resetTriggerTeleportSpeedEnabled == true) AdjustPlayerVelocity(player, 0);
-                    return HookResult.Continue;
-                }
+                        var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
-                return HookResult.Continue;
-            }, HookMode.Post);
+                        if (player == null || !connectedPlayers.ContainsKey(player.Slot)) return HookResult.Continue;
+
+                        if (caller.Entity.Name == currentMapEndTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot) && playerTimers[player.Slot].IsTimerRunning)
+                        {
+                            OnTimerStop(player);
+                            return HookResult.Continue;
+                        }
+
+                        if (caller.Entity.Name == currentMapStartTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot))
+                        {
+                            playerTimers[player.Slot].IsTimerRunning = false;
+                            playerTimers[player.Slot].TimerTicks = 0;
+                            playerCheckpoints.Remove(player.Slot);
+                            return HookResult.Continue;
+                        }
+
+                        return HookResult.Continue;
+                    });
+
+            HookEntityOutput("trigger_multiple", "OnEndTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
+                    {
+                        if (activator.DesignerName != "player" || useTriggers == false)
+                            return HookResult.Continue;
+
+                        var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
+
+                        if (player == null || !connectedPlayers.ContainsKey(player.Slot)) return HookResult.Continue;
+
+                        if (caller.Entity.Name == currentMapEndTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot) && playerTimers[player.Slot].IsTimerRunning)
+                        {
+                            OnTimerStop(player);
+                            if (maxStartingSpeedEnabled == true && (float)Math.Sqrt(player.PlayerPawn.Value.AbsVelocity.X * player.PlayerPawn.Value.AbsVelocity.X + player.PlayerPawn.Value.AbsVelocity.Y * player.PlayerPawn.Value.AbsVelocity.Y + player.PlayerPawn.Value.AbsVelocity.Z * player.PlayerPawn.Value.AbsVelocity.Z) > maxStartingSpeed)
+                            {
+                                AdjustPlayerVelocity(player, maxStartingSpeed);
+                            }
+                            return HookResult.Continue;
+                        }
+
+                        if (caller.Entity.Name == currentMapStartTrigger && player.IsValid && playerTimers.ContainsKey(player.Slot))
+                        {
+                            OnTimerStart(player);
+                            return HookResult.Continue;
+                        }
+
+                        return HookResult.Continue;
+                    });
+
+            HookEntityOutput("trigger_teleport", "OnEndTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
+                    {
+                        if (activator.DesignerName != "player" || resetTriggerTeleportSpeedEnabled == false)
+                            return HookResult.Continue;
+
+                        var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
+
+                        if (player == null || !connectedPlayers.ContainsKey(player.Slot)) return HookResult.Continue;
+
+                        if (player.IsValid && resetTriggerTeleportSpeedEnabled == true)
+                        {
+                            AdjustPlayerVelocity(player, 0);
+                            return HookResult.Continue;
+                        }
+
+                        return HookResult.Continue;
+                    });
 
             Console.WriteLine("[SharpTimer] Plugin Loaded");
         }
@@ -512,8 +513,8 @@ namespace SharpTimer
                 return;
             }
 
-            
-            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Top 10 Records for {currentMapName}:"));            
+
+            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Top 10 Records for {currentMapName}:"));
             //ReplyToPlayer(player, msgPrefix + $" Top 10 Records for {currentMapName}:");
             int rank = 1;
 
@@ -522,10 +523,11 @@ namespace SharpTimer
                 string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
                 int timerTicks = kvp.Value.TimerTicks; // Get the timer ticks from the dictionary value
 
-                Server.NextFrame(() => {
+                Server.NextFrame(() =>
+                {
                     player.PrintToChat(msgPrefix + $" #{rank}: {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}");
                     rank++;
-                    });  
+                });
                 //ReplyToPlayer(player, msgPrefix + $" #{rank}: {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}");
             }
         }
@@ -572,7 +574,7 @@ namespace SharpTimer
         public async Task PBCommandHandler(CCSPlayerController? player, string steamId, int playerSlot)
         {
             int pbTicks;
-            if(useMySQL == false)
+            if (useMySQL == false)
             {
                 pbTicks = GetPreviousPlayerRecord(player);
             }
@@ -584,6 +586,49 @@ namespace SharpTimer
             playerTimers[playerSlot].PB = FormatTime(pbTicks);
 
             Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ChatColors.Green}{FormatTime(pbTicks)}"));
+        }
+
+        [ConsoleCommand("css_pb", "Tells you the Server record on this map")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void SRCommand(CCSPlayerController? player, CommandInfo command)
+        {
+            if (player == null || rankEnabled == false) return;
+
+            if (playerTimers[player.Slot].TicksSinceLastCmd < 64)
+            {
+                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                return;
+            }
+
+            _ = SRCommandHandler(player);
+        }
+
+        public async Task SRCommandHandler(CCSPlayerController? player)
+        {
+            Dictionary<string, PlayerRecord> sortedRecords;
+            if (useMySQL == false)
+            {
+                sortedRecords = GetSortedRecords();
+            }
+            else
+            {
+                sortedRecords = await GetSortedRecordsFromDatabase();
+            }
+
+            if (sortedRecords.Count == 0)
+            {
+                return;
+            }
+
+            Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} Current Server Record on {ChatColors.Green}{currentMapName}{ChatColors.White}: "));
+
+            foreach (var kvp in sortedRecords.Take(1))
+            {
+                string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
+                int timerTicks = kvp.Value.TimerTicks; // Get the timer ticks from the dictionary value
+
+                Server.NextFrame(() => Server.PrintToChatAll(msgPrefix + $" {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}"));
+            }
         }
 
         [ConsoleCommand("css_r", "Teleports you to start")]
