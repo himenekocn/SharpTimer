@@ -247,7 +247,7 @@ namespace SharpTimer
         {
             if (player == null || !playerTimers.ContainsKey(playerSlot))
             {
-                return "Unranked";
+                return "暂无排名";
             }
 
             int savedPlayerTime;
@@ -262,7 +262,7 @@ namespace SharpTimer
 
             if (savedPlayerTime == 0)
             {
-                return "Unranked";
+                return "暂无排名";
             }
 
             Dictionary<string, PlayerRecord> sortedRecords;
