@@ -475,17 +475,6 @@ namespace SharpTimer
             else
             {
                 //find a way to bbox triggers
-
-                var triggers = Utilities.FindAllEntitiesByDesignerName<CBaseTrigger>("trigger_multiple");
-
-                foreach (var trigger in triggers)
-                {
-                    if (trigger.Entity.Name == currentMapStartTrigger)
-                    {
-                        trigger.Effects = 0;
-                        Console.WriteLine($"{trigger.Effects}");
-                    }
-                }
             }
 
         }

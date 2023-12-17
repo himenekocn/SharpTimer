@@ -807,21 +807,33 @@ namespace SharpTimer
 
             if (useTriggers == true)
             {
-                if (FindStartTriggerPos() == null)
+                if (currentRespawnPos != null)
                 {
-                    player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
-                    return;
+                    player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
                 }
-                player.PlayerPawn.Value.Teleport(FindStartTriggerPos(), player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                else
+                {
+                    if (FindStartTriggerPos() != null)
+                    {
+                        player.PlayerPawn.Value.Teleport(FindStartTriggerPos(), player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                    }
+                    else
+                    {
+                        player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
+                    }
+                }
             }
             else
             {
-                if (currentRespawnPos == null)
+                if (currentRespawnPos != null)
+                {
+                    player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                }
+                else
                 {
                     player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
-                    return;
                 }
-                player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                
             }
             playerTimers[player.Slot].IsTimerRunning = false;
             playerTimers[player.Slot].TimerTicks = 0;
