@@ -85,12 +85,13 @@ namespace SharpTimer
             // Format seconds with three decimal points
             string secondsWithMilliseconds = $"{timeSpan.Seconds:D2}.{(ticks % 64) * (1000.0 / 64.0):000}";
 
-            if (timeSpan.Minutes >= 60)
+            int totalMinutes = (int)timeSpan.TotalMinutes;
+            if (totalMinutes >= 60)
             {
-                return $"{timeSpan.Hours:D1}:{timeSpan.Minutes - (timeSpan.Hours * 60):D2}:{secondsWithMilliseconds}";
+                return $"{totalMinutes / 60:D1}:{totalMinutes % 60:D2}:{secondsWithMilliseconds}";
             }
 
-            return $"{timeSpan.Minutes:D1}:{secondsWithMilliseconds}";
+            return $"{totalMinutes:D1}:{secondsWithMilliseconds}";
         }
 
         private static string FormatTimeDifference(int currentTicks, int previousTicks)
@@ -103,12 +104,13 @@ namespace SharpTimer
             // Format seconds with three decimal points
             string secondsWithMilliseconds = $"{timeDifference.Seconds:D2}.{(Math.Abs(differenceTicks) % 64) * (1000.0 / 64.0):000}";
 
-            if (timeDifference.Minutes >= 60)
+            int totalDifferenceMinutes = (int)timeDifference.TotalMinutes;
+            if (totalDifferenceMinutes >= 60)
             {
-                return $"{sign}{timeDifference.Hours:D1}:{timeDifference.Minutes - (timeDifference.Hours * 60):D2}:{secondsWithMilliseconds}";
+                return $"{sign}{totalDifferenceMinutes / 60:D1}:{totalDifferenceMinutes % 60:D2}:{secondsWithMilliseconds}";
             }
 
-            return $"{sign}{timeDifference.Minutes:D1}:{secondsWithMilliseconds}";
+            return $"{sign}{totalDifferenceMinutes:D1}:{secondsWithMilliseconds}";
         }
 
         public static void DrawLaserBetween(Vector startPos, Vector endPos)
