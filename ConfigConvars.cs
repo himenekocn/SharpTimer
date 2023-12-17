@@ -141,6 +141,15 @@ namespace SharpTimer
             }
         }
 
+        [ConsoleCommand("sharptimer_connect_commands_msg_enabled", "Whether commands on join messages are enabled by default or not. Default value: true")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerConnectCmdMSGConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            cmdJoinMsgEnabled = bool.TryParse(args, out bool cmdJoinMsgEnabledValue) ? cmdJoinMsgEnabledValue : args != "0" && cmdJoinMsgEnabled;
+        }
+
         [ConsoleCommand("sharptimer_connectmsg_enabled", "Whether connect/disconnect messages are enabled by default or not. Default value: true")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
         public void SharpTimerConnectMSGConvar(CCSPlayerController? player, CommandInfo command)

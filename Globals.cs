@@ -39,6 +39,7 @@ namespace SharpTimer
         public bool cpEnabled = false;
         public bool removeCpRestrictEnabled = false;
         public bool connectMsgEnabled = true;
+        public bool cmdJoinMsgEnabled = true;
         public bool srEnabled = true;
         public int srTimer = 120;
         public int rankHUDTimer = 170;

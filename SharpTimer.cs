@@ -49,21 +49,23 @@ namespace SharpTimer
 
                     if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}Player {ChatColors.Red}{player.PlayerName} {ChatColors.White}connected!");
 
-                    player.PrintToChat($"{msgPrefix}Welcome {ChatColors.Red}{player.PlayerName} {ChatColors.White}to the server!");
-
-                    player.PrintToChat($"{msgPrefix}Available Commands:");
-
-                    if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
-                    if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
-                    if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - Shows your current rank");
-                    if (pbComEnabled) player.PrintToChat($"{msgPrefix}!pb (css_pb) - Shows your current PB");
-
-                    if (cpEnabled)
+                    if (cmdJoinMsgEnabled == true)
                     {
-                        player.PrintToChat($"{msgPrefix}!cp (css_cp) - Sets a Checkpoint");
-                        player.PrintToChat($"{msgPrefix}!tp (css_tp) - Teleports you to the last Checkpoint");
-                        player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - Teleports you to the previous Checkpoint");
-                        player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you to the next Checkpoint");
+                        player.PrintToChat($"{msgPrefix}Welcome {ChatColors.Red}{player.PlayerName} {ChatColors.White}to the server!");
+                        player.PrintToChat($"{msgPrefix}Available Commands:");
+
+                        if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
+                        if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
+                        if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - Shows your current rank");
+                        if (pbComEnabled) player.PrintToChat($"{msgPrefix}!pb (css_pb) - Shows your current PB");
+
+                        if (cpEnabled)
+                        {
+                            player.PrintToChat($"{msgPrefix}!cp (css_cp) - Sets a Checkpoint");
+                            player.PrintToChat($"{msgPrefix}!tp (css_tp) - Teleports you to the last Checkpoint");
+                            player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - Teleports you one Checkpoint back");
+                            player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you one Checkpoint forward");
+                        }
                     }
 
                     _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
@@ -76,7 +78,7 @@ namespace SharpTimer
                     if (removeLegsEnabled == true) player.PlayerPawn.Value.Render = Color.FromArgb(254, 254, 254, 254);
 
                     //PlayerSettings
-                    if(useMySQL == true)
+                    if (useMySQL == true)
                     {
                         //_ = GetPlayerSettingFromDatabase(player, "Azerty");
                         //_ = GetPlayerSettingFromDatabase(player, "HideTimerHud");
@@ -182,10 +184,10 @@ namespace SharpTimer
                             if (playerTimers[player.Slot].MovementService.DuckSpeed != 7.0f) playerTimers[player.Slot].MovementService.DuckSpeed = 7.0f;
                         }
 
-                        if(!player.PlayerPawn.Value.OnGroundLastTick)
+                        if (!player.PlayerPawn.Value.OnGroundLastTick)
                         {
                             playerTimers[player.Slot].TicksInAir++;
-                            if(playerTimers[player.Slot].TicksInAir == 1)
+                            if (playerTimers[player.Slot].TicksInAir == 1)
                             {
                                 playerTimers[player.Slot].PreSpeed = $"{player.PlayerPawn.Value.AbsVelocity.X} {player.PlayerPawn.Value.AbsVelocity.Y} {player.PlayerPawn.Value.AbsVelocity.Z}";
                                 //playerTimers[player.Slot].JumpPos = $"{player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin.X} {player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin.Y} {player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin.Z}";
@@ -727,7 +729,7 @@ namespace SharpTimer
             }
 
             playerTimers[playerSlot].TimerRank = ranking;
-            if(pbTicks != 0)
+            if (pbTicks != 0)
             {
                 playerTimers[playerSlot].PB = FormatTime(pbTicks);
             }
@@ -735,11 +737,11 @@ namespace SharpTimer
             {
                 playerTimers[playerSlot].PB = "n/a";
             }
-            
-            if(toHUD == false)
+
+            if (toHUD == false)
             {
                 Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ChatColors.Green}{ranking}"));
-                if(pbTicks != 0) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Your current PB: {ChatColors.Green}{FormatTime(pbTicks)}"));
+                if (pbTicks != 0) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Your current PB: {ChatColors.Green}{FormatTime(pbTicks)}"));
             }
         }
 

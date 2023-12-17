@@ -48,34 +48,34 @@ namespace SharpTimer
 
         private bool IsValidStartTriggerName(string triggerName)
         {
-            if (triggerName.Contains("map_start") || 
-                triggerName.Contains("s1_start") || 
+            if (triggerName.Contains("map_start") ||
+                triggerName.Contains("s1_start") ||
                 triggerName.Contains("stage1_start") ||
                 triggerName.Contains("timer_startzone") ||
                 triggerName.Contains("zone_start") ||
                 triggerName.Contains(currentMapStartTrigger))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private bool IsValidEndTriggerName(string triggerName)
         {
-            if (triggerName.Contains("map_end") || 
+            if (triggerName.Contains("map_end") ||
                 triggerName.Contains("timer_endzone") ||
                 triggerName.Contains("zone_end") ||
                 triggerName.Contains(currentMapEndTrigger))
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private static string FormatTime(int ticks)
@@ -84,6 +84,11 @@ namespace SharpTimer
 
             // Format seconds with three decimal points
             string secondsWithMilliseconds = $"{timeSpan.Seconds:D2}.{(ticks % 64) * (1000.0 / 64.0):000}";
+
+            if (timeSpan.Minutes >= 60)
+            {
+                return $"{timeSpan.Hours:D1}:{timeSpan.Minutes - (timeSpan.Hours * 60):D2}:{secondsWithMilliseconds}";
+            }
 
             return $"{timeSpan.Minutes:D1}:{secondsWithMilliseconds}";
         }
@@ -97,6 +102,11 @@ namespace SharpTimer
 
             // Format seconds with three decimal points
             string secondsWithMilliseconds = $"{timeDifference.Seconds:D2}.{(Math.Abs(differenceTicks) % 64) * (1000.0 / 64.0):000}";
+
+            if (timeDifference.Minutes >= 60)
+            {
+                return $"{sign}{timeDifference.Hours:D1}:{timeDifference.Minutes - (timeDifference.Hours * 60):D2}:{secondsWithMilliseconds}";
+            }
 
             return $"{sign}{timeDifference.Minutes:D1}:{secondsWithMilliseconds}";
         }
@@ -183,14 +193,14 @@ namespace SharpTimer
 
             foreach (var trigger in triggers)
             {
-                if(trigger == null || trigger.Entity.Name == null) continue;
+                if (trigger == null || trigger.Entity.Name == null) continue;
 
                 if (IsValidStartTriggerName(trigger.Entity.Name.ToString()))
                 {
                     return trigger.CBodyComponent?.SceneNode?.AbsOrigin;
                 }
             }
-            return new Vector(0,0,0);
+            return new Vector(0, 0, 0);
         }
 
         private static Vector ParseVector(string vectorString)
