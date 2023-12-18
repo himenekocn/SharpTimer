@@ -33,14 +33,14 @@ namespace SharpTimer
                     return;
                 }
 
-                Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} Current Server Record on {ChatColors.Green}{currentMapName}{ChatColors.White}: "));
+                Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
 
                 foreach (var kvp in sortedRecords.Take(1))
                 {
                     string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
                     int timerTicks = kvp.Value.TimerTicks; // Get the timer ticks from the dictionary value
 
-                    Server.NextFrame(() => Server.PrintToChatAll(msgPrefix + $" {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}"));
+                    Server.NextFrame(() => Server.PrintToChatAll(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}"));
                 }
             }, TimerFlags.REPEAT);
             isADTimerRunning = true;
@@ -111,6 +111,119 @@ namespace SharpTimer
             }
 
             return $"{sign}{totalDifferenceMinutes:D1}:{secondsWithMilliseconds}";
+        }
+
+        static string ParseColorToSymbol(string input)
+        {
+            // Check if the input is a recognized color name
+            Dictionary<string, string> colorNameSymbolMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+             {
+                 { "white", "\u0001" },
+                 { "darkred", "\u0002" },
+                 { "purple", "\u0003" },
+                 { "darkgreen", "\u0004" },
+                 { "lightgreen", "\u0005" },
+                 { "green", "\u0006" },
+                 { "red", "\u0007" },
+                 { "lightgray", "\u0008" },
+                 { "orange", "\u000F" },
+                 { "darkpurple", "\u000E" },
+                 { "lightred", "\u000F" }
+             };
+
+            string lowerInput = input.ToLower();
+
+            if (colorNameSymbolMap.TryGetValue(lowerInput, out var symbol))
+            {
+                return symbol;
+            }
+
+            // If the input is not a recognized color name, check if it's a valid hex color code
+            if (IsHexColorCode(input))
+            {
+                return ParseHexToSymbol(input);
+            }
+
+            return "\u0010"; // Default symbol for unknown input
+        }
+
+        static bool IsHexColorCode(string input)
+        {
+            try
+            {
+                Color color = ColorTranslator.FromHtml(input);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        static string ParseHexToSymbol(string hexColorCode)
+        {
+            Color color = ColorTranslator.FromHtml(hexColorCode);
+
+            Dictionary<string, string> predefinedColors = new Dictionary<string, string>
+            {
+                { "#FFFFFF", "" },  // White
+                { "#8B0000", "" },  // Dark Red
+                { "#800080", "" },  // Purple
+                { "#006400", "" },  // Dark Green
+                { "#00FF00", "" },  // Light Green
+                { "#008000", "" },  // Green
+                { "#FF0000", "" },  // Red
+                { "#D3D3D3", "" },  // Light Gray
+                { "#FFA500", "" },  // Orange
+                { "#780578", "" },  // Dark Purple
+                { "#FF4500", "" }   // Light Red
+            };
+
+            hexColorCode = hexColorCode.ToUpper();
+
+            if (predefinedColors.TryGetValue(hexColorCode, out var colorName))
+            {
+                return colorName;
+            }
+
+            Color targetColor = ColorTranslator.FromHtml(hexColorCode);
+            string closestColor = FindClosestColor(targetColor, predefinedColors.Keys);
+
+            if (predefinedColors.TryGetValue(closestColor, out var symbol))
+            {
+                return symbol;
+            }
+
+            return "";
+        }
+
+        static string FindClosestColor(Color targetColor, IEnumerable<string> colorHexCodes)
+        {
+            double minDistance = double.MaxValue;
+            string closestColor = null;
+
+            foreach (var hexCode in colorHexCodes)
+            {
+                Color color = ColorTranslator.FromHtml(hexCode);
+                double distance = ColorDistance(targetColor, color);
+
+                if (distance < minDistance)
+                {
+                    minDistance = distance;
+                    closestColor = hexCode;
+                }
+            }
+
+            return closestColor;
+        }
+
+        static double ColorDistance(Color color1, Color color2)
+        {
+            int rDiff = color1.R - color2.R;
+            int gDiff = color1.G - color2.G;
+            int bDiff = color1.B - color2.B;
+
+            return Math.Sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
         }
 
         public static void DrawLaserBetween(Vector startPos, Vector endPos)

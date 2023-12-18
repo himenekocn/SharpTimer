@@ -4,8 +4,6 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using System.Text.Json;
@@ -205,11 +203,12 @@ namespace SharpTimer
 
             HookEntityOutput("trigger_multiple", "OnStartTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        if (activator.DesignerName != "player" || useTriggers == false || activator == null || caller == null)
-                            return HookResult.Continue;
+                        if (activator == null || caller == null) return HookResult.Continue;
+                        if (activator.DesignerName != "player" || useTriggers == false || activator == null || caller == null) return HookResult.Continue;
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
+                        if (player == null ) return HookResult.Continue;
                         if (!player.PawnIsAlive || player == null || !connectedPlayers.ContainsKey(player.Slot) || caller.Entity.Name == null) return HookResult.Continue;
 
                         if (IsValidEndTriggerName(caller.Entity.Name.ToString()) && player.IsValid && playerTimers.ContainsKey(player.Slot) && playerTimers[player.Slot].IsTimerRunning)
@@ -235,12 +234,13 @@ namespace SharpTimer
 
             HookEntityOutput("trigger_multiple", "OnEndTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        if (activator.DesignerName != "player" || useTriggers == false || activator == null || caller == null)
-                            return HookResult.Continue;
+                        if (activator == null || caller == null) return HookResult.Continue;
+                        if (activator.DesignerName != "player" || useTriggers == false || activator == null || caller == null) return HookResult.Continue;
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
-                        if (!player.PawnIsAlive || player == null || !connectedPlayers.ContainsKey(player.Slot) || caller.Entity.Name == null) return HookResult.Continue;
+                        if (player == null ) return HookResult.Continue;
+                        if (!player.PawnIsAlive || !connectedPlayers.ContainsKey(player.Slot) || caller.Entity.Name == null) return HookResult.Continue;
 
                         if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && player.IsValid && playerTimers.ContainsKey(player.Slot))
                         {
@@ -257,12 +257,13 @@ namespace SharpTimer
 
             HookEntityOutput("trigger_teleport", "OnEndTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        if (activator.DesignerName != "player" || resetTriggerTeleportSpeedEnabled == false)
-                            return HookResult.Continue;
+                        if (activator == null || caller == null) return HookResult.Continue;
+                        if (activator.DesignerName != "player" || resetTriggerTeleportSpeedEnabled == false) return HookResult.Continue;
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
-                        if (!player.PawnIsAlive || player == null || !connectedPlayers.ContainsKey(player.Slot)) return HookResult.Continue;
+                        if (player == null ) return HookResult.Continue;
+                        if (!player.PawnIsAlive || !connectedPlayers.ContainsKey(player.Slot)) return HookResult.Continue;
 
                         if (player.IsValid && resetTriggerTeleportSpeedEnabled == true)
                         {
@@ -355,15 +356,15 @@ namespace SharpTimer
 
             if (currentTicks < previousRecordTicks)
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Green}[{FormatTime(currentTicks)}]! {timeDifference}");
+                Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Green}[{FormatTime(currentTicks)}]! {timeDifference}");
             }
             else if (currentTicks > previousRecordTicks)
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ifFirstTimeColor}[{FormatTime(currentTicks)}]! {timeDifference}");
+                Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}just finished the map in: {ifFirstTimeColor}[{FormatTime(currentTicks)}]! {timeDifference}");
             }
             else
             {
-                Server.PrintToChatAll(msgPrefix + $"{ChatColors.Green}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
+                Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
             }
 
             if (useMySQL == false) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
@@ -392,7 +393,7 @@ namespace SharpTimer
                 playerTimers[player.Slot].StartZoneC2 = "";
                 playerTimers[player.Slot].IsAddingStartZone = true;
                 playerTimers[player.Slot].IsAddingEndZone = false;
-                player.PrintToChat($" {ChatColors.LightPurple}[ZONE TOOL]{ChatColors.Default} Please stand on one of the opposite start zone corners and type {ChatColors.Green}!c1 & !c2");
+                player.PrintToChat($" {ChatColors.LightPurple}[ZONE TOOL]{ChatColors.Default} Please stand on one of the opposite start zone corners and type {ParseColorToSymbol(primaryHUDcolor)}!c1 & !c2");
                 player.PrintToCenter($" {ChatColors.Grey}Please stand on one of the opposite start zone corners and type !c1 & !c2");
                 player.PrintToChat($" {ChatColors.Grey}Type !addendzone again to cancel...");
                 player.PrintToChat($" {ChatColors.Grey}Commands:!addstartzone, !addendzone,");
@@ -421,7 +422,7 @@ namespace SharpTimer
                 playerTimers[player.Slot].EndZoneC2 = "";
                 playerTimers[player.Slot].IsAddingStartZone = false;
                 playerTimers[player.Slot].IsAddingEndZone = true;
-                player.PrintToChat($" {ChatColors.LightPurple}[ZONE TOOL]{ChatColors.Default} Please stand on one of the opposite end zone corners and type {ChatColors.Green}!c1 & !c2");
+                player.PrintToChat($" {ChatColors.LightPurple}[ZONE TOOL]{ChatColors.Default} Please stand on one of the opposite end zone corners and type {ParseColorToSymbol(primaryHUDcolor)}!c1 & !c2");
                 player.PrintToCenter($" Please stand on one of the opposite end zone corners and type !c1 & !c2");
                 player.PrintToChat($" {ChatColors.Grey}Type !addendzone again to cancel...");
                 player.PrintToChat($" {ChatColors.Grey}Commands:!addstartzone, !addendzone,");
@@ -601,14 +602,14 @@ namespace SharpTimer
             if (playerTimers[player.Slot].HideTimerHud == true)
             {
                 playerTimers[player.Slot].HideTimerHud = false;
-                player.PrintToChat($"Hide Timer HUD set to: {ChatColors.Green}{playerTimers[player.Slot].HideTimerHud}");
+                player.PrintToChat($"Hide Timer HUD set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].HideTimerHud}");
                 //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "HideTimerHud", false);
                 return;
             }
             else
             {
                 playerTimers[player.Slot].HideTimerHud = true;
-                player.PrintToChat($"Hide Timer HUD set to: {ChatColors.Green}{playerTimers[player.Slot].HideTimerHud}");
+                player.PrintToChat($"Hide Timer HUD set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].HideTimerHud}");
                 //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "HideTimerHud", true);
                 return;
             }
@@ -631,14 +632,14 @@ namespace SharpTimer
             if (playerTimers[player.Slot].SoundsEnabled == true)
             {
                 playerTimers[player.Slot].SoundsEnabled = false;
-                player.PrintToChat($"Sounds set to: {ChatColors.Green}{playerTimers[player.Slot].SoundsEnabled}");
+                player.PrintToChat($"Sounds set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].SoundsEnabled}");
                 //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "SoundsEnabled", false);
                 return;
             }
             else
             {
                 playerTimers[player.Slot].SoundsEnabled = true;
-                player.PrintToChat($"Sounds set to: {ChatColors.Green}{playerTimers[player.Slot].SoundsEnabled}");
+                player.PrintToChat($"Sounds set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].SoundsEnabled}");
                 //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "SoundsEnabled", true);
                 return;
             }
@@ -692,10 +693,9 @@ namespace SharpTimer
 
                 Server.NextFrame(() =>
                 {
-                    player.PrintToChat(msgPrefix + $" #{rank}: {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}");
+                    player.PrintToChat(msgPrefix + $" #{rank}: {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}");
                     rank++;
                 });
-                //ReplyToPlayer(player, msgPrefix + $" #{rank}: {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}");
             }
         }
 
@@ -740,8 +740,8 @@ namespace SharpTimer
 
             if (toHUD == false)
             {
-                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ChatColors.Green}{ranking}"));
-                if (pbTicks != 0) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Your current PB: {ChatColors.Green}{FormatTime(pbTicks)}"));
+                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ParseColorToSymbol(primaryHUDcolor)}{ranking}"));
+                if (pbTicks != 0) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Your current PB: {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(pbTicks)}"));
             }
         }
 
@@ -777,14 +777,14 @@ namespace SharpTimer
                 return;
             }
 
-            Server.NextFrame(() => player.PrintToChat($"{msgPrefix} Current Server Record on {ChatColors.Green}{currentMapName}{ChatColors.White}: "));
+            Server.NextFrame(() => player.PrintToChat($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
 
             foreach (var kvp in sortedRecords.Take(1))
             {
                 string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
                 int timerTicks = kvp.Value.TimerTicks; // Get the timer ticks from the dictionary value
 
-                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" {ChatColors.Green}{playerName} {ChatColors.White}- {ChatColors.Green}{FormatTime(timerTicks)}"));
+                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}"));
             }
         }
 
@@ -889,7 +889,7 @@ namespace SharpTimer
             int checkpointCount = playerCheckpoints[player.Slot].Count;
 
             // Print the chat message with the checkpoint count
-            player.PrintToChat(msgPrefix + $"Checkpoint set! {ChatColors.Green}#{checkpointCount}");
+            player.PrintToChat(msgPrefix + $"Checkpoint set! {ParseColorToSymbol(primaryHUDcolor)}#{checkpointCount}");
             if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {cpSound}");
         }
 
