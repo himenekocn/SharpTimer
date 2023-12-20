@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Core;
 
@@ -45,6 +46,7 @@ namespace SharpTimer
         public CCSPlayer_MovementServices? MovementService { get; set; }
 
         //admin stuff
+        public bool IsNoclipEnabled { get; set; }
         public bool IsAddingStartZone { get; set; }
         public string? StartZoneC1 { get; set; }
         public string? StartZoneC2 { get; set; }
@@ -65,5 +67,32 @@ namespace SharpTimer
         public string? PositionString { get; set; }
         public string? RotationString { get; set; }
         public string? SpeedString { get; set; }
+    }
+
+    public class WIN_LINUX<T>
+    {
+        [JsonPropertyName("Windows")]
+        public T Windows { get; private set; }
+
+        [JsonPropertyName("Linux")]
+        public T Linux { get; private set; }
+
+        public WIN_LINUX(T windows, T linux)
+        {
+            this.Windows = windows;
+            this.Linux = linux;
+        }
+
+        public T Get()
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            {
+                return this.Windows;
+            }
+            else
+            {
+                return this.Linux;
+            }
+        }
     }
 }

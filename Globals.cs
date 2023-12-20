@@ -59,5 +59,7 @@ namespace SharpTimer
         public string? mySQLpath;
         public string? playerRecordsPath;
         public string? currentMapName;
+
+        private readonly WIN_LINUX<int> OnCollisionRulesChangedOffset = new WIN_LINUX<int>(173, 172);
     }
 }
