@@ -149,15 +149,24 @@ namespace SharpTimer
 
         static bool IsHexColorCode(string input)
         {
-            try
+            if (input.StartsWith("#") && (input.Length == 7 || input.Length == 9))
             {
-                Color color = ColorTranslator.FromHtml(input);
-                return true;
+                try
+                {
+                    Color color = ColorTranslator.FromHtml(input);
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error parsing hex color code: {ex.Message}");
+                }
             }
-            catch
+            else
             {
-                return false;
+                Console.WriteLine("Invalid hex color code format");
             }
+
+            return false;
         }
 
         static string ParseHexToSymbol(string hexColorCode)
@@ -226,7 +235,7 @@ namespace SharpTimer
             return Math.Sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
         }
 
-        public static void DrawLaserBetween(Vector startPos, Vector endPos)
+        public void DrawLaserBetween(Vector startPos, Vector endPos)
         {
             CBeam beam = Utilities.CreateEntityByName<CBeam>("beam");
             if (beam == null)
@@ -235,7 +244,15 @@ namespace SharpTimer
                 return;
             }
 
-            beam.Render = Color.LimeGreen;
+            if(IsHexColorCode(primaryHUDcolor))
+            {
+                beam.Render = ColorTranslator.FromHtml(primaryHUDcolor);
+            }
+            else
+            {
+                beam.Render = Color.FromName(primaryHUDcolor);
+            }
+
             beam.Width = 1.5f;
 
             beam.Teleport(startPos, new QAngle(0, 0, 0), new Vector(0, 0, 0));
@@ -248,7 +265,7 @@ namespace SharpTimer
             Console.WriteLine("Laser spawned");
         }
 
-        public void DrawWireframe(Vector corner1, Vector corner2, float height = 50)
+        public void DrawWireframe2D(Vector corner1, Vector corner2, float height = 50)
         {
             Vector corner3 = new Vector(corner2.X, corner1.Y, corner1.Z);
             Vector corner4 = new Vector(corner1.X, corner2.Y, corner1.Z);
@@ -272,6 +289,35 @@ namespace SharpTimer
             DrawLaserBetween(corner2, corner2_top);
             DrawLaserBetween(corner3, corner3_top);
             DrawLaserBetween(corner4, corner4_top);
+        }
+
+        public void DrawWireframe3D(Vector corner1, Vector corner8)
+        {
+            Vector corner2 = new Vector(corner1.X, corner8.Y, corner1.Z);
+            Vector corner3 = new Vector(corner8.X, corner8.Y, corner1.Z);
+            Vector corner4 = new Vector(corner8.X, corner1.Y, corner1.Z);
+
+            Vector corner5 = new Vector(corner8.X, corner1.Y, corner8.Z);
+            Vector corner6 = new Vector(corner1.X, corner1.Y, corner8.Z);
+            Vector corner7 = new Vector(corner1.X, corner8.Y, corner8.Z);
+
+            //top square
+            DrawLaserBetween(corner1, corner2);
+            DrawLaserBetween(corner2, corner3);
+            DrawLaserBetween(corner3, corner4);
+            DrawLaserBetween(corner4, corner1);
+
+            //bottom square
+            DrawLaserBetween(corner5, corner6);
+            DrawLaserBetween(corner6, corner7);
+            DrawLaserBetween(corner7, corner8);
+            DrawLaserBetween(corner8, corner5);
+
+            //connect them both to build a cube
+            DrawLaserBetween(corner1, corner6);
+            DrawLaserBetween(corner2, corner7);
+            DrawLaserBetween(corner3, corner8);
+            DrawLaserBetween(corner4, corner5);
         }
 
         static bool IsVectorInsideBox(Vector playerVector, Vector corner1, Vector corner2, float height = 50)
@@ -316,6 +362,39 @@ namespace SharpTimer
                 }
             }
             return null;
+        }
+
+        private (Vector? startRight, Vector? startLeft, Vector? endRight, Vector? endLeft) FindTriggerCorners()
+        {
+            var targets = Utilities.FindAllEntitiesByDesignerName<CPointEntity>("info_target");
+
+            Vector? startRight = null;
+            Vector? startLeft = null;
+            Vector? endRight = null;
+            Vector? endLeft = null;
+
+            foreach (var target in targets)
+            {
+                if (target == null || target.Entity.Name == null) continue;
+
+                switch (target.Entity.Name)
+                {
+                    case "start_right":
+                        startRight = target.AbsOrigin;
+                        break;
+                    case "start_left":
+                        startLeft = target.AbsOrigin;
+                        break;
+                    case "end_right":
+                        endRight = target.AbsOrigin;
+                        break;
+                    case "end_left":
+                        endLeft = target.AbsOrigin;
+                        break;
+                }
+            }
+
+            return (startRight, startLeft, endRight, endLeft);
         }
 
         private static Vector ParseVector(string vectorString)
@@ -583,12 +662,17 @@ namespace SharpTimer
 
             if (useTriggers == false)
             {
-                DrawWireframe(currentMapStartC1, currentMapStartC2, 50);
-                DrawWireframe(currentMapEndC1, currentMapEndC2, 50);
+                DrawWireframe2D(currentMapStartC1, currentMapStartC2, 50);
+                DrawWireframe2D(currentMapEndC1, currentMapEndC2, 50);
             }
             else
             {
-                //find a way to bbox triggers
+                var (startRight, startLeft, endRight, endLeft) = FindTriggerCorners();
+
+                if (startRight == null || startLeft == null || endRight == null || endLeft == null) return;
+
+                DrawWireframe3D(startRight, startLeft);
+                DrawWireframe3D(endRight, endLeft);
             }
 
         }
