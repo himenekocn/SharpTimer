@@ -110,7 +110,6 @@ namespace SharpTimer
                     {
                         player.PlayerPawn.Value.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
                         player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
-
                         VirtualFunctionVoid<nint> collisionRulesChanged = new VirtualFunctionVoid<nint>(player.PlayerPawn.Value.Handle, OnCollisionRulesChangedOffset.Get());
                         collisionRulesChanged.Invoke(player.PlayerPawn.Value.Handle);
                     }
@@ -141,23 +140,6 @@ namespace SharpTimer
                     return HookResult.Continue;
                 }
             });
-
-            /* RegisterEventHandler<EventPlayerHurt>((@event, info) =>
-            {
-                if (@event.Userid == null) return HookResult.Continue;
-
-                var player = @event.Userid;
-
-                if (player.IsBot || !player.IsValid)
-                {
-                    return HookResult.Continue;
-                }
-                else
-                {
-                    if (disableDamage == true) @event.Userid.PlayerPawn.Value.Health = 100; //reset player health to 100 on damage taken
-                    return HookResult.Continue;
-                }
-            }); */
 
             RegisterListener<Listeners.OnTick>(() =>
             {
