@@ -46,6 +46,88 @@ namespace SharpTimer
             isADTimerRunning = true;
         }
 
+        public void PrintTimerHud(CCSPlayerController player)
+        {
+            if (IsAllowedPlayer(player))
+            {
+                var buttons = player.Buttons;
+                string formattedPlayerVel = Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()).ToString().PadLeft(4, '0');
+                string formattedPlayerPre = Math.Round(ParseVector(playerTimers[player.Slot].PreSpeed ?? "0 0 0").Length2D()).ToString();
+                string playerTime = FormatTime(playerTimers[player.Slot].TimerTicks);
+                string forwardKey = "W";
+                string leftKey = "A";
+                string backKey = "S";
+                string rightKey = "D";
+
+                if (playerTimers[player.Slot].Azerty == true)
+                {
+                    forwardKey = "Z";
+                    leftKey = "Q";
+                    backKey = "S";
+                    rightKey = "D";
+                }
+
+                if (playerTimers[player.Slot].IsTimerRunning)
+                {
+                    if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
+                        $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='{primaryHUDcolor}'>{playerTime}</font><br>" +
+                        $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>" +
+                        $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}</font><br>" +
+                        $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
+                        $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+
+                    playerTimers[player.Slot].TimerTicks++;
+                }
+                else
+                {
+                    if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
+                        $"<font color='{tertiaryHUDcolor}'>Speed:</font> <font color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>" +
+                        $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}</font><br>" +
+                        $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
+                        $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
+                        $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+                }
+
+                if (!useTriggers)
+                {
+                    CheckPlayerActions(player);
+                }
+
+                if (playerTimers[player.Slot].MovementService != null && removeCrouchFatigueEnabled == true)
+                {
+                    if (playerTimers[player.Slot].MovementService.DuckSpeed != 7.0f) playerTimers[player.Slot].MovementService.DuckSpeed = 7.0f;
+                }
+
+                if (!player.PlayerPawn.Value.OnGroundLastTick)
+                {
+                    playerTimers[player.Slot].TicksInAir++;
+                    if (playerTimers[player.Slot].TicksInAir == 1)
+                    {
+                        playerTimers[player.Slot].PreSpeed = $"{player.PlayerPawn.Value.AbsVelocity.X} {player.PlayerPawn.Value.AbsVelocity.Y} {player.PlayerPawn.Value.AbsVelocity.Z}";
+                    }
+                }
+                else
+                {
+                    playerTimers[player.Slot].TicksInAir = 0;
+                }
+
+                playerTimers[player.Slot].TicksSinceLastCmd++;
+            }
+            else
+            {
+                playerTimers[player.Slot].IsTimerRunning = false;
+                playerTimers[player.Slot].TimerTicks = 0;
+                playerCheckpoints.Remove(player.Slot);
+            }
+        }
+
         private bool IsValidStartTriggerName(string triggerName)
         {
             if (triggerName.Contains("map_start") ||
@@ -85,7 +167,7 @@ namespace SharpTimer
                 !player.PawnIsAlive ||
                 (CsTeam)player.TeamNum == CsTeam.Spectator ||
                 player.Pawn == null ||
-                !player.IsBot ||
+                player.IsBot ||
                 !connectedPlayers.ContainsKey(player.Slot)
                 )
             {
@@ -263,7 +345,7 @@ namespace SharpTimer
                 return;
             }
 
-            if(IsHexColorCode(primaryHUDcolor))
+            if (IsHexColorCode(primaryHUDcolor))
             {
                 beam.Render = ColorTranslator.FromHtml(primaryHUDcolor);
             }
@@ -356,8 +438,8 @@ namespace SharpTimer
 
         private void AdjustPlayerVelocity(CCSPlayerController? player, float velocity)
         {
-            if(!IsAllowedPlayer(player)) return;
-            
+            if (!IsAllowedPlayer(player)) return;
+
             var currentX = player.PlayerPawn.Value.AbsVelocity.X;
             var currentY = player.PlayerPawn.Value.AbsVelocity.Y;
             var currentSpeed2D = Math.Sqrt(currentX * currentX + currentY * currentY);
@@ -533,7 +615,7 @@ namespace SharpTimer
 
         public async Task<string> GetPlayerPlacementWithTotal(CCSPlayerController? player, string steamId, int playerSlot)
         {
-            if(!IsAllowedPlayer(player))
+            if (!IsAllowedPlayer(player))
             {
                 return "Unranked";
             }
@@ -586,7 +668,7 @@ namespace SharpTimer
 
         public void SavePlayerTime(CCSPlayerController? player, int timerTicks)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
             if (playerTimers[player.Slot].IsTimerRunning == false) return;
 
             string currentMapName = Server.MapName;
