@@ -186,7 +186,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AdminNoclipCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || player.Pawn == null) return;
+            if (player == null || player.Pawn == null || (CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             playerTimers[player.Slot].IsNoclipEnabled = playerTimers[player.Slot].IsNoclipEnabled ? false : true;
 
@@ -414,6 +414,7 @@ namespace SharpTimer
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null || respawnEnabled == false) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -467,6 +468,7 @@ namespace SharpTimer
         public void StopTimer(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -507,6 +509,7 @@ namespace SharpTimer
         public void TpToPlayer(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -557,6 +560,7 @@ namespace SharpTimer
         public void SetPlayerCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null || cpEnabled == false) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -609,6 +613,7 @@ namespace SharpTimer
         public void TpPlayerCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null || cpEnabled == false) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -653,6 +658,7 @@ namespace SharpTimer
         public void TpPreviousCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null || !cpEnabled) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -701,6 +707,7 @@ namespace SharpTimer
         public void TpNextCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!player.PawnIsAlive || player == null || !cpEnabled) return;
+            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
