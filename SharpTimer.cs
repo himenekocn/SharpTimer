@@ -8,8 +8,6 @@ using System.Drawing;
 using System.Runtime.InteropServices;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
-
-
 namespace SharpTimer
 {
     [MinimumApiVersion(125)]
@@ -30,7 +28,6 @@ namespace SharpTimer
             RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
             {
                 var player = @event.Userid;
-
 
                 if (player.IsBot || !player.IsValid)
                 {

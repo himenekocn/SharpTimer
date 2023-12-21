@@ -614,6 +614,7 @@ namespace SharpTimer
         private void LoadConfig()
         {
             Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
+            Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
 
             if (srEnabled == true) ServerRecordADtimer();
 
