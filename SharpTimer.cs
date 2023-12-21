@@ -144,7 +144,7 @@ namespace SharpTimer
                 {
                     var player = playerEntry.Value;
 
-                    if (player.IsValid && !player.IsBot && player.PawnIsAlive && (CsTeam)player.TeamNum != CsTeam.Spectator)
+                    if (IsAllowedPlayer(player))
                     {
                         var buttons = player.Buttons;
                         string formattedPlayerVel = Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()).ToString().PadLeft(4, '0');
@@ -231,16 +231,15 @@ namespace SharpTimer
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
-                        if (player == null) return HookResult.Continue;
-                        if (!player.PawnIsAlive || player == null || !connectedPlayers.ContainsKey(player.Slot) || caller.Entity.Name == null || (CsTeam)player.TeamNum == CsTeam.Spectator) return HookResult.Continue;
+                        if (!IsAllowedPlayer(player) || caller.Entity.Name == null) return HookResult.Continue;
 
-                        if (IsValidEndTriggerName(caller.Entity.Name.ToString()) && player.IsValid && playerTimers.ContainsKey(player.Slot) && playerTimers[player.Slot].IsTimerRunning)
+                        if (IsValidEndTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player) && playerTimers[player.Slot].IsTimerRunning)
                         {
                             OnTimerStop(player);
                             return HookResult.Continue;
                         }
 
-                        if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && player.IsValid && playerTimers.ContainsKey(player.Slot))
+                        if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player))
                         {
                             playerTimers[player.Slot].IsTimerRunning = false;
                             playerTimers[player.Slot].TimerTicks = 0;
@@ -262,10 +261,9 @@ namespace SharpTimer
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
-                        if (player == null) return HookResult.Continue;
-                        if (!player.PawnIsAlive || !connectedPlayers.ContainsKey(player.Slot) || caller.Entity.Name == null || (CsTeam)player.TeamNum == CsTeam.Spectator) return HookResult.Continue;
+                        if (!IsAllowedPlayer(player) || caller.Entity.Name == null) return HookResult.Continue;
 
-                        if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && player.IsValid && playerTimers.ContainsKey(player.Slot))
+                        if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player))
                         {
                             OnTimerStart(player);
                             if (maxStartingSpeedEnabled == true && (float)Math.Sqrt(player.PlayerPawn.Value.AbsVelocity.X * player.PlayerPawn.Value.AbsVelocity.X + player.PlayerPawn.Value.AbsVelocity.Y * player.PlayerPawn.Value.AbsVelocity.Y + player.PlayerPawn.Value.AbsVelocity.Z * player.PlayerPawn.Value.AbsVelocity.Z) > maxStartingSpeed)
@@ -285,10 +283,9 @@ namespace SharpTimer
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
-                        if (player == null) return HookResult.Continue;
-                        if (!player.PawnIsAlive || !connectedPlayers.ContainsKey(player.Slot) || (CsTeam)player.TeamNum == CsTeam.Spectator) return HookResult.Continue;
+                        if (!IsAllowedPlayer(player)) return HookResult.Continue;
 
-                        if (player.IsValid && resetTriggerTeleportSpeedEnabled == true)
+                        if (IsAllowedPlayer(player) && resetTriggerTeleportSpeedEnabled == true)
                         {
                             AdjustPlayerVelocity(player, 0);
                             return HookResult.Continue;
@@ -318,7 +315,7 @@ namespace SharpTimer
 
         private void CheckPlayerActions(CCSPlayerController? player)
         {
-            if (!player.PawnIsAlive || player == null || (CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player)) return;
 
             Vector incorrectVector = new Vector(0, 0, 0);
 
@@ -342,7 +339,7 @@ namespace SharpTimer
 
         public void OnTimerStart(CCSPlayerController? player)
         {
-            if (!player.PawnIsAlive || player == null || !player.IsValid || (CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player)) return;
 
             // Remove checkpoints for the current player
             playerCheckpoints.Remove(player.Slot);
@@ -353,7 +350,7 @@ namespace SharpTimer
 
         public void OnTimerStop(CCSPlayerController? player)
         {
-            if (!player.PawnIsAlive || player == null || playerTimers[player.Slot].IsTimerRunning == false || !player.IsValid || (CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player) || playerTimers[player.Slot].IsTimerRunning == false) return;
 
             int currentTicks = playerTimers[player.Slot].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);

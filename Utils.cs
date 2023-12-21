@@ -78,6 +78,25 @@ namespace SharpTimer
             }
         }
 
+        private bool IsAllowedPlayer(CCSPlayerController? player)
+        {
+            if (
+                player == null ||
+                !player.PawnIsAlive ||
+                (CsTeam)player.TeamNum == CsTeam.Spectator ||
+                player.Pawn == null ||
+                !player.IsBot ||
+                !connectedPlayers.ContainsKey(player.Slot)
+                )
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
         private static string FormatTime(int ticks)
         {
             TimeSpan timeSpan = TimeSpan.FromSeconds(ticks / 64.0);
@@ -320,7 +339,7 @@ namespace SharpTimer
             DrawLaserBetween(corner4, corner5);
         }
 
-        static bool IsVectorInsideBox(Vector playerVector, Vector corner1, Vector corner2, float height = 50)
+        private bool IsVectorInsideBox(Vector playerVector, Vector corner1, Vector corner2)
         {
             float minX = Math.Min(corner1.X, corner2.X);
             float minY = Math.Min(corner1.Y, corner2.Y);
@@ -332,11 +351,13 @@ namespace SharpTimer
 
             return playerVector.X >= minX && playerVector.X <= maxX &&
                    playerVector.Y >= minY && playerVector.Y <= maxY &&
-                   playerVector.Z >= minZ && playerVector.Z <= maxZ + height;
+                   playerVector.Z >= minZ && playerVector.Z <= maxZ + fakeTriggerHeight;
         }
 
-        private static void AdjustPlayerVelocity(CCSPlayerController? player, float velocity)
+        private void AdjustPlayerVelocity(CCSPlayerController? player, float velocity)
         {
+            if(!IsAllowedPlayer(player)) return;
+            
             var currentX = player.PlayerPawn.Value.AbsVelocity.X;
             var currentY = player.PlayerPawn.Value.AbsVelocity.Y;
             var currentSpeed2D = Math.Sqrt(currentX * currentX + currentY * currentY);
@@ -458,7 +479,7 @@ namespace SharpTimer
 
         private int GetPreviousPlayerRecord(CCSPlayerController? player)
         {
-            if (player == null) return 0;
+            if (!IsAllowedPlayer(player)) return 0;
 
             string currentMapName = Server.MapName;
             string steamId = player.SteamID.ToString();
@@ -480,7 +501,7 @@ namespace SharpTimer
 
         public string GetPlayerPlacement(CCSPlayerController? player)
         {
-            if (player == null || !playerTimers.ContainsKey(player.Slot) || !playerTimers[player.Slot].IsTimerRunning) return "";
+            if (!IsAllowedPlayer(player) || !playerTimers[player.Slot].IsTimerRunning) return "";
 
 
             int currentPlayerTime = playerTimers[player.Slot].TimerTicks;
@@ -512,7 +533,7 @@ namespace SharpTimer
 
         public async Task<string> GetPlayerPlacementWithTotal(CCSPlayerController? player, string steamId, int playerSlot)
         {
-            if (player == null || !playerTimers.ContainsKey(playerSlot))
+            if(!IsAllowedPlayer(player))
             {
                 return "Unranked";
             }
@@ -565,7 +586,7 @@ namespace SharpTimer
 
         public void SavePlayerTime(CCSPlayerController? player, int timerTicks)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
             if (playerTimers[player.Slot].IsTimerRunning == false) return;
 
             string currentMapName = Server.MapName;
@@ -663,8 +684,8 @@ namespace SharpTimer
 
             if (useTriggers == false)
             {
-                DrawWireframe2D(currentMapStartC1, currentMapStartC2, 50);
-                DrawWireframe2D(currentMapEndC1, currentMapEndC2, 50);
+                DrawWireframe2D(currentMapStartC1, currentMapStartC2, fakeTriggerHeight);
+                DrawWireframe2D(currentMapEndC1, currentMapEndC2, fakeTriggerHeight);
             }
             else
             {

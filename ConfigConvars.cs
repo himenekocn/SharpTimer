@@ -257,5 +257,22 @@ namespace SharpTimer
 
             tertiaryHUDcolor = $"{args}";
         }
+
+        [ConsoleCommand("sharptimer_fake_trigger_height", " ")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerFakeTriggerHeightConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            if (float.TryParse(args, out float height) && height > 0)
+            {
+                fakeTriggerHeight = height;
+                Console.WriteLine($"SharpTimer fake trigger height set to {height} units.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid interval value. Please provide a positive integer.");
+            }
+        }
     }
 }

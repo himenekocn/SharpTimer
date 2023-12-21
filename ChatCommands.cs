@@ -16,7 +16,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddStartZoneCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].IsAddingStartZone == true)
             {
@@ -45,7 +45,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddEndZoneCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].IsAddingEndZone == true)
             {
@@ -74,7 +74,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddRespawnPosCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             // Get the player's current position
             Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
@@ -90,7 +90,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SaveZonesCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].EndZoneC1 == null || playerTimers[player.Slot].EndZoneC2 == null || playerTimers[player.Slot].StartZoneC1 == null || playerTimers[player.Slot].StartZoneC2 == null || playerTimers[player.Slot].RespawnPos == null)
             {
@@ -126,7 +126,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddZoneCorner1Command(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             // Get the player's current position
             Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
@@ -154,7 +154,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddZoneCorner2Command(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             // Get the player's current position
             Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
@@ -186,7 +186,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AdminNoclipCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || player.Pawn == null || (CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if(!IsAllowedPlayer(player)) return;
 
             playerTimers[player.Slot].IsNoclipEnabled = playerTimers[player.Slot].IsNoclipEnabled ? false : true;
 
@@ -204,7 +204,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AzertySwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -226,7 +226,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void HUDSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -248,7 +248,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SoundsSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if(!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -270,7 +270,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void PrintTopRecords(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || topEnabled == false) return;
+            if (!IsAllowedPlayer(player) || topEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -285,6 +285,7 @@ namespace SharpTimer
 
         public async Task PrintTopRecordsHandler(CCSPlayerController? player)
         {
+            if (!IsAllowedPlayer(player) || topEnabled == false) return;
             Dictionary<string, PlayerRecord> sortedRecords;
             if (useMySQL == true)
             {
@@ -324,7 +325,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void RankCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || rankEnabled == false) return;
+            if (!IsAllowedPlayer(player) || rankEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -337,6 +338,7 @@ namespace SharpTimer
 
         public async Task RankCommandHandler(CCSPlayerController? player, string steamId, int playerSlot, bool toHUD = false)
         {
+            if (!IsAllowedPlayer(player)) return;
             string ranking = await GetPlayerPlacementWithTotal(player, steamId, playerSlot);
 
             int pbTicks;
@@ -370,7 +372,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SRCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null || rankEnabled == false) return;
+            if (!IsAllowedPlayer(player) || rankEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -383,6 +385,7 @@ namespace SharpTimer
 
         public async Task SRCommandHandler(CCSPlayerController? player)
         {
+            if (!IsAllowedPlayer(player) || rankEnabled == false) return;
             Dictionary<string, PlayerRecord> sortedRecords;
             if (useMySQL == false)
             {
@@ -413,8 +416,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null || respawnEnabled == false) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player) || respawnEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -467,8 +469,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void StopTimer(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -491,7 +492,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void STVerCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if (player == null) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -508,8 +509,7 @@ namespace SharpTimer
         [CommandHelper(minArgs: 1, usage: "[name]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void TpToPlayer(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -559,8 +559,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SetPlayerCP(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null || cpEnabled == false) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player) || cpEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -612,8 +611,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void TpPlayerCP(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null || cpEnabled == false) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player) || cpEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -657,8 +655,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void TpPreviousCP(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null || !cpEnabled) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player) || cpEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -706,8 +703,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void TpNextCP(CCSPlayerController? player, CommandInfo command)
         {
-            if (!player.PawnIsAlive || player == null || !cpEnabled) return;
-            if ((CsTeam)player.TeamNum == CsTeam.Spectator) return;
+            if (!IsAllowedPlayer(player) || cpEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {

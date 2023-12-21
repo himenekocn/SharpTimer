@@ -39,7 +39,7 @@ namespace SharpTimer
 
         public async Task SavePlayerTimeToDatabase(CCSPlayerController? player, int timerTicks, string steamId, string playerName, int playerSlot)
         {
-            if (player == null) return;
+            if (!IsAllowedPlayer(player)) return;
             if (playerTimers[playerSlot].IsTimerRunning == false) return;
 
             try
@@ -92,7 +92,7 @@ namespace SharpTimer
 
         public async Task<int> GetPreviousPlayerRecordFromDatabase(CCSPlayerController? player, string steamId, string currentMapName)
         {
-            if (player == null)
+            if (!IsAllowedPlayer(player))
             {
                 return 0;
             }
