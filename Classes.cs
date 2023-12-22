@@ -26,6 +26,9 @@ namespace SharpTimer
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string? RespawnPos { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string? MapTier { get; set; }
     }
 
     public class PlayerTimerInfo

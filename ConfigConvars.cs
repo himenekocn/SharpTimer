@@ -17,6 +17,15 @@ namespace SharpTimer
             useMySQL = bool.TryParse(args, out bool useMySQLValue) ? useMySQLValue : args != "0" && useMySQL;
         }
 
+        [ConsoleCommand("sharptimer_autoset_mapinfo_hostname_enabled", "Whether Map Name and Map Tier (if available) should be put into the hostname or not. Default value: false")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerHostnameConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            autosetHostname = bool.TryParse(args, out bool autosetHostnameValue) ? autosetHostnameValue : args != "0" && autosetHostname;
+        }
+
         [ConsoleCommand("sharptimer_command_spam_cooldown", "Defines the time between commands can be called. Default value: 1")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
         public void SharpTimerCmdCooldownConvar(CCSPlayerController? player, CommandInfo command)
@@ -30,7 +39,7 @@ namespace SharpTimer
             }
             else
             {
-                Console.WriteLine("Invalid interval value. Please provide a positive integer.");
+                Console.WriteLine("Invalid command cooldown value. Please provide a positive integer.");
             }
         }
 
@@ -137,7 +146,7 @@ namespace SharpTimer
             }
             else
             {
-                Console.WriteLine("Invalid interval value. Please provide a positive integer.");
+                Console.WriteLine("Invalid max trigger speed value. Please provide a positive integer.");
             }
         }
 
@@ -186,11 +195,11 @@ namespace SharpTimer
             if (int.TryParse(args, out int interval) && interval > 0)
             {
                 srTimer = interval;
-                Console.WriteLine($"SharpTimer interval set to {interval} seconds.");
+                Console.WriteLine($"SharpTimer sr ad interval set to {interval} seconds.");
             }
             else
             {
-                Console.WriteLine("Invalid interval value. Please provide a positive integer.");
+                Console.WriteLine("Invalid sr ad interval value. Please provide a positive integer.");
             }
         }
 
@@ -271,7 +280,7 @@ namespace SharpTimer
             }
             else
             {
-                Console.WriteLine("Invalid interval value. Please provide a positive integer.");
+                Console.WriteLine("Invalid fake trigger height value. Please provide a positive integer.");
             }
         }
     }

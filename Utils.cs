@@ -1,5 +1,6 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
@@ -130,53 +131,34 @@ namespace SharpTimer
 
         private bool IsValidStartTriggerName(string triggerName)
         {
-            if (triggerName.Contains("map_start") ||
-                triggerName.Contains("s1_start") ||
-                triggerName.Contains("stage1_start") ||
-                triggerName.Contains("timer_startzone") ||
-                triggerName.Contains("zone_start") ||
-                triggerName.Contains(currentMapStartTrigger))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            string[] validTriggers = {  "map_start",
+                                        "s1_start",
+                                        "stage1_start",
+                                        "timer_startzone",
+                                        "zone_start",
+                                        currentMapStartTrigger };
+
+            return validTriggers.Contains(triggerName);
         }
 
         private bool IsValidEndTriggerName(string triggerName)
         {
-            if (triggerName.Contains("map_end") ||
-                triggerName.Contains("timer_endzone") ||
-                triggerName.Contains("zone_end") ||
-                triggerName.Contains(currentMapEndTrigger))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            string[] validTriggers = {  "map_end",
+                                        "timer_endzone", 
+                                        "zone_end", 
+                                        currentMapEndTrigger };
+
+            return validTriggers.Contains(triggerName);
         }
 
         private bool IsAllowedPlayer(CCSPlayerController? player)
         {
-            if (
-                player == null ||
-                !player.PawnIsAlive ||
-                (CsTeam)player.TeamNum == CsTeam.Spectator ||
-                player.Pawn == null ||
-                player.IsBot ||
-                !connectedPlayers.ContainsKey(player.Slot)
-                )
-            {
-                return false;
-            }
-            else
-            {
-                return true;
-            }
+            return !(player == null ||
+                     !player.PawnIsAlive ||
+                     (CsTeam)player.TeamNum == CsTeam.Spectator ||
+                     player.Pawn == null ||
+                     player.IsBot ||
+                     !connectedPlayers.ContainsKey(player.Slot));
         }
 
         private static string FormatTime(int ticks)
@@ -363,7 +345,6 @@ namespace SharpTimer
             beam.EndPos.Z = endPos.Z;
 
             beam.DispatchSpawn();
-            Console.WriteLine("Laser spawned");
         }
 
         public void DrawWireframe2D(Vector corner1, Vector corner2, float height = 50)
@@ -704,6 +685,22 @@ namespace SharpTimer
             }
         }
 
+        private void AddMapInfoToHostname()
+        {
+            string defaultHostname = ConVar.Find("hostname").StringValue;
+
+            if (currentMapTier != null)
+            {
+                Server.ExecuteCommand($"hostname '{defaultHostname} | {currentMapTier}'");
+            }
+            else
+            {
+                Server.ExecuteCommand($"hostname '{defaultHostname}'");
+            }
+
+            Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+        }
+
         private void OnMapStartHandler(string mapName)
         {
             Server.NextFrame(() =>
@@ -718,6 +715,8 @@ namespace SharpTimer
         {
             Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
             Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
+
+            AddMapInfoToHostname();
 
             if (srEnabled == true) ServerRecordADtimer();
 
@@ -736,6 +735,11 @@ namespace SharpTimer
             {
                 string json = File.ReadAllText(mapdataPath);
                 var mapInfo = JsonSerializer.Deserialize<MapInfo>(json);
+
+                if (!string.IsNullOrEmpty(mapInfo.MapTier))
+                {
+                    currentMapTier = mapInfo.MapTier;
+                }
 
                 if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
                 {

@@ -12,12 +12,21 @@ namespace SharpTimer
 
         public override string ModuleName => "SharpTimer";
         public override string ModuleVersion => "0.1.4";
+
+        #if UPDATE_VERSION
+            public AddDateToModuleVersion()
+            {
+                ModuleVersion = $"{ModuleVersion} - {DateTime.Now.ToString("yyyy-MM-dd")}";
+            }
+        #endif
+
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS Timer Plugin";
         public string msgPrefix = $"[SharpTimer] ";
         public string primaryHUDcolor = "green";
         public string secondaryHUDcolor = "orange";
         public string tertiaryHUDcolor = "white";
+        public string? currentMapTier = null;
         public string currentMapStartTrigger = "trigger_startzone";
         public string currentMapEndTrigger = "trigger_endzone";
         public Vector currentMapStartC1 = new Vector(0, 0, 0);
@@ -40,6 +49,7 @@ namespace SharpTimer
         public bool removeCpRestrictEnabled = false;
         public bool connectMsgEnabled = true;
         public bool cmdJoinMsgEnabled = true;
+        public bool autosetHostname = true;
         public bool srEnabled = true;
         public int srTimer = 120;
         public int rankHUDTimer = 170;
