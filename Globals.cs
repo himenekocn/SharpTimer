@@ -13,13 +13,6 @@ namespace SharpTimer
         public override string ModuleName => "SharpTimer";
         public override string ModuleVersion => "0.1.4";
 
-        #if UPDATE_VERSION
-            public AddDateToModuleVersion()
-            {
-                ModuleVersion = $"{ModuleVersion} - {DateTime.Now.ToString("yyyy-MM-dd")}";
-            }
-        #endif
-
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS Timer Plugin";
         public string msgPrefix = $"[SharpTimer] ";
@@ -42,6 +35,7 @@ namespace SharpTimer
         public bool topEnabled = true;
         public bool rankEnabled = true;
         public bool pbComEnabled = true;
+        public bool alternativeSpeedometer = false;
         public bool removeLegsEnabled = true;
         public bool removeCollisionEnabled = true;
         public bool disableDamage = true;

@@ -60,30 +60,38 @@ namespace SharpTimer
                                   ? $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='{primaryHUDcolor}'>{playerTime}</font><br>"
                                   : "";
 
-                string veloLine = $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
+                string veloLine = $"<font class='fontSize-l' color='{tertiaryHUDcolor}'>Speed:</font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
+                string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()))}";
 
                 string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
-                                  $"{(currentMapTier != null ? $" | {currentMapTier}" : "")}</font><br>";
+                                  $"{(currentMapTier != null ? $" | {currentMapTier}" : "")}</font>" +
+                                  (alternativeSpeedometer ? "" : "<br>");
 
                 string forwardKey = playerTimers[player.Slot].Azerty ? "Z" : "W";
                 string leftKey = playerTimers[player.Slot].Azerty ? "Q" : "A";
                 string backKey = "S";
                 string rightKey = "D";
 
-                string keysLine = $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
-                                  $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
-                                  $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
-                                  $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
-                                  $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                                  $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>";
+                string keysLineNoHtml = $"{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
+                                        $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
+                                        $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
+                                        $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
+                                        $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
+                                        $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}";
 
+                string keysLine = alternativeSpeedometer
+                                  ? keysLineNoHtml
+                                  : $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{keysLineNoHtml}</font>";
+
+                string hudContent = $"{timerLine}" +
+                                    $"{veloLine}" +
+                                    (alternativeSpeedometer ? $"{veloLineAlt}" : "") +
+                                    $"{infoLine}" +
+                                    (alternativeSpeedometer ? "" : $"{keysLine}");
+
+                if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(hudContent);
+                if (alternativeSpeedometer == true) player.PrintToCenter(keysLine);
                 if (playerTimers[player.Slot].IsTimerRunning) playerTimers[player.Slot].TimerTicks++;
-
-                if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
-                        $"{timerLine}" +
-                        $"{veloLine}" +
-                        $"{infoLine}" +
-                        $"{keysLine}");
 
                 if (!useTriggers)
                 {
@@ -114,6 +122,29 @@ namespace SharpTimer
                 playerCheckpoints.Remove(player.Slot);
                 playerTimers[player.Slot].TicksSinceLastCmd++;
             }
+        }
+
+        private string GetSpeedBar(double speed)
+        {
+            const int maxSpeed = 500;
+            const int barLength = 20;
+
+            int barProgress = (int)Math.Round((speed / maxSpeed) * barLength);
+            string speedBar = "";
+
+            for (int i = 0; i < barLength; i++)
+            {
+                if (i < barProgress)
+                {
+                    speedBar += "■";
+                }
+                else
+                {
+                    speedBar += "□";
+                }
+            }
+
+            return $"{speedBar}<br>";
         }
 
         private bool IsValidStartTriggerName(string triggerName)
@@ -674,15 +705,16 @@ namespace SharpTimer
 
         private void AddMapInfoToHostname()
         {
+            if (autosetHostname == false) return;
             string defaultHostname = ConVar.Find("hostname").StringValue;
 
             if (currentMapTier != null)
             {
-                Server.ExecuteCommand($"hostname '{defaultHostname} | {currentMapTier}'");
+                Server.ExecuteCommand($"hostname {defaultHostname} | {currentMapTier} {Server.MapName}");
             }
             else
             {
-                Server.ExecuteCommand($"hostname '{defaultHostname}'");
+                Server.ExecuteCommand($"hostname {defaultHostname}");
             }
 
             Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");

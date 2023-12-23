@@ -186,6 +186,15 @@ namespace SharpTimer
             srEnabled = bool.TryParse(args, out bool srEnabledValue) ? srEnabledValue : args != "0" && srEnabled;
         }
 
+        [ConsoleCommand("sharptimer_alt_velo_enabled", "Whether the alternative speedometer is enabled by default or not. Default value: false")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerAltVeloConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            alternativeSpeedometer = bool.TryParse(args, out bool alternativeSpeedometerValue) ? alternativeSpeedometerValue : args != "0" && alternativeSpeedometer;
+        }
+
         [ConsoleCommand("sharptimer_sr_ad_timer", "Interval how often SR shall be printed to chat. Default value: 120")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
         public void SharpTimerMaxSpeedConvar(CCSPlayerController? player, CommandInfo command)
