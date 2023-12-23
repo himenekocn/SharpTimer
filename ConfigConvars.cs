@@ -8,13 +8,20 @@ namespace SharpTimer
 {
     public partial class SharpTimer
     {
-        [ConsoleCommand("sharptimer_mysql_enabled", "Whether player times should be put into a mysql database by default or not. Default value: false")]
+        [ConsoleCommand("sharptimer_hostname", "Default Server Hostname.")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
-        public void SharpTimerMySQLConvar(CCSPlayerController? player, CommandInfo command)
+        public void SharpTimerServerHostname(CCSPlayerController? player, CommandInfo command)
         {
-            string args = command.ArgString;
 
-            useMySQL = bool.TryParse(args, out bool useMySQLValue) ? useMySQLValue : args != "0" && useMySQL;
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                defaultServerHostname = $" {ParseColorToSymbol(primaryHUDcolor)} A SharpTimer Server {ChatColors.White}";
+                return;
+            }
+
+            defaultServerHostname = $" {ParseColorToSymbol(primaryHUDcolor)} {args} {ChatColors.White}";
         }
 
         [ConsoleCommand("sharptimer_autoset_mapinfo_hostname_enabled", "Whether Map Name and Map Tier (if available) should be put into the hostname or not. Default value: false")]
@@ -24,6 +31,15 @@ namespace SharpTimer
             string args = command.ArgString;
 
             autosetHostname = bool.TryParse(args, out bool autosetHostnameValue) ? autosetHostnameValue : args != "0" && autosetHostname;
+        }
+        
+        [ConsoleCommand("sharptimer_mysql_enabled", "Whether player times should be put into a mysql database by default or not. Default value: false")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerMySQLConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            useMySQL = bool.TryParse(args, out bool useMySQLValue) ? useMySQLValue : args != "0" && useMySQL;
         }
 
         [ConsoleCommand("sharptimer_command_spam_cooldown", "Defines the time between commands can be called. Default value: 1")]
@@ -195,9 +211,26 @@ namespace SharpTimer
             alternativeSpeedometer = bool.TryParse(args, out bool alternativeSpeedometerValue) ? alternativeSpeedometerValue : args != "0" && alternativeSpeedometer;
         }
 
+        [ConsoleCommand("sharptimer_alt_velo_max_speed", "The alternative speedometer max speed. Default value: 3000")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerAltVeloMaxSpeedConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            if (int.TryParse(args, out int interval) && interval > 0)
+            {
+                altVeloMaxSpeed = interval;
+                Console.WriteLine($"SharpTimer Alternative Velo Max Speed set to {interval} units/s.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid Alternative Velo Max Speed. Please provide a positive integer.");
+            }
+        }
+
         [ConsoleCommand("sharptimer_sr_ad_timer", "Interval how often SR shall be printed to chat. Default value: 120")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
-        public void SharpTimerMaxSpeedConvar(CCSPlayerController? player, CommandInfo command)
+        public void SharpTimerMaxSRSpeedConvar(CCSPlayerController? player, CommandInfo command)
         {
             string args = command.ArgString;
 

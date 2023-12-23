@@ -53,7 +53,7 @@ namespace SharpTimer
             {
                 var buttons = player.Buttons;
                 string formattedPlayerVel = Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()).ToString().PadLeft(4, '0');
-                string formattedPlayerPre = Math.Round(ParseVector(playerTimers[player.Slot].PreSpeed ?? "0 0 0").Length2D()).ToString();
+                string formattedPlayerPre = Math.Round(ParseVector(playerTimers[player.Slot].PreSpeed ?? "0 0 0").Length2D()).ToString().PadLeft(3, '0');
                 string playerTime = FormatTime(playerTimers[player.Slot].TimerTicks);
 
                 string timerLine = playerTimers[player.Slot].IsTimerRunning
@@ -61,7 +61,7 @@ namespace SharpTimer
                                   : "";
 
                 string veloLine = $"<font class='fontSize-l' color='{tertiaryHUDcolor}'>Speed:</font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
-                string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()))}";
+                string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()), playerTimers[player.Slot].TimerTicks)}";
 
                 string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
                                   $"{(currentMapTier != null ? $" | {currentMapTier}" : "")}</font>" +
@@ -81,7 +81,7 @@ namespace SharpTimer
 
                 string keysLine = alternativeSpeedometer
                                   ? keysLineNoHtml
-                                  : $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{keysLineNoHtml}</font>";
+                                  : $"<font color='{tertiaryHUDcolor}'>{keysLineNoHtml}</font>";
 
                 string hudContent = $"{timerLine}" +
                                     $"{veloLine}" +
@@ -102,6 +102,8 @@ namespace SharpTimer
                 {
                     if (playerTimers[player.Slot].MovementService.DuckSpeed != 7.0f) playerTimers[player.Slot].MovementService.DuckSpeed = 7.0f;
                 }
+
+                if(playerTimers[player.Slot].TimerRank == null || playerTimers[player.Slot].PB == null) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
 
                 if (!player.PlayerPawn.Value.OnGroundLastTick)
                 {
@@ -124,27 +126,42 @@ namespace SharpTimer
             }
         }
 
-        private string GetSpeedBar(double speed)
+        private string GetSpeedBar(double speed, int rainbowTicks)
         {
-            const int maxSpeed = 500;
-            const int barLength = 20;
+            const int barLength = 80;
 
-            int barProgress = (int)Math.Round((speed / maxSpeed) * barLength);
+            int barProgress = (int)Math.Round((speed / altVeloMaxSpeed) * barLength);
             string speedBar = "";
 
             for (int i = 0; i < barLength; i++)
             {
                 if (i < barProgress)
                 {
-                    speedBar += "■";
+                    speedBar += $"<font class='fontSize-s' color='{(speed >= altVeloMaxSpeed ? GetRainbowColor(rainbowTicks) : primaryHUDcolor)}'>|</font>";
                 }
                 else
                 {
-                    speedBar += "□";
+                    speedBar += $"<font class='fontSize-s' color='{secondaryHUDcolor}'>|</font>";
                 }
             }
 
             return $"{speedBar}<br>";
+        }
+
+        private string GetRainbowColor(int rainbowTicks)
+        {
+            const double rainbowPeriod = 100.0; // Adjust this value to control the speed of the rainbow
+
+            double percentage = (rainbowTicks % rainbowPeriod) / rainbowPeriod;
+            double red = Math.Sin(2 * Math.PI * (percentage)) * 127 + 128;
+            double green = Math.Sin(2 * Math.PI * (percentage + 1.0 / 3.0)) * 127 + 128;
+            double blue = Math.Sin(2 * Math.PI * (percentage + 2.0 / 3.0)) * 127 + 128;
+
+            int intRed = (int)Math.Round(red);
+            int intGreen = (int)Math.Round(green);
+            int intBlue = (int)Math.Round(blue);
+
+            return $"#{intRed:X2}{intGreen:X2}{intBlue:X2}";
         }
 
         private bool IsValidStartTriggerName(string triggerName)
@@ -706,15 +723,14 @@ namespace SharpTimer
         private void AddMapInfoToHostname()
         {
             if (autosetHostname == false) return;
-            string defaultHostname = ConVar.Find("hostname").StringValue;
 
             if (currentMapTier != null)
             {
-                Server.ExecuteCommand($"hostname {defaultHostname} | {currentMapTier} {Server.MapName}");
+                Server.ExecuteCommand($"hostname {defaultServerHostname} | {currentMapTier} {Server.MapName}");
             }
             else
             {
-                Server.ExecuteCommand($"hostname {defaultHostname}");
+                Server.ExecuteCommand($"hostname {defaultServerHostname} | {Server.MapName}");
             }
 
             Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
@@ -732,6 +748,7 @@ namespace SharpTimer
 
         private void LoadConfig()
         {
+            Server.ExecuteCommand($"hostname {defaultServerHostname}");
             Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
             Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
 

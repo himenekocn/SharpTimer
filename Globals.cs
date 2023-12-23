@@ -55,6 +55,7 @@ namespace SharpTimer
         public bool removeCrouchFatigueEnabled = true;
         public int cmdCooldown = 64;
         public float fakeTriggerHeight = 50;
+        public int altVeloMaxSpeed = 3000;
 
         public string beepSound = "sounds/ui/csgo_ui_button_rollover_large.vsnd";
         public string respawnSound = "sounds/ui/menu_accept.vsnd";
@@ -64,6 +65,7 @@ namespace SharpTimer
         public string? mySQLpath;
         public string? playerRecordsPath;
         public string? currentMapName;
+        public string? defaultServerHostname;
 
         private readonly WIN_LINUX<int> OnCollisionRulesChangedOffset = new WIN_LINUX<int>(174, 173);
     }

@@ -1,8 +1,10 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
+using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -61,13 +63,9 @@ namespace SharpTimer
                             player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you one Checkpoint forward");
                         }
                     }
-
-                    _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
-
+                    
                     playerTimers[player.Slot].MovementService = new CCSPlayer_MovementServices(player.PlayerPawn.Value.MovementServices!.Handle);
                     playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
-
-                    //_ = PBCommandHandler(player, player.SteamID.ToString(), player.Slot);
 
                     if (removeLegsEnabled == true) player.PlayerPawn.Value.Render = Color.FromArgb(254, 254, 254, 254);
 
@@ -97,7 +95,7 @@ namespace SharpTimer
 
                 var player = @event.Userid;
 
-                if (player.IsBot || !player.IsValid)
+                if (player.IsBot || !player.IsValid || player == null)
                 {
                     return HookResult.Continue;
                 }
@@ -143,7 +141,7 @@ namespace SharpTimer
                 foreach (var playerEntry in connectedPlayers)
                 {
                     var player = playerEntry.Value;
-                    if(player == null) continue;
+                    if (player == null) continue;
                     TimerOnTick(player);
                 }
             });

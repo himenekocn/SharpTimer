@@ -354,11 +354,11 @@ namespace SharpTimer
             playerTimers[playerSlot].TimerRank = ranking;
             if (pbTicks != 0)
             {
-                playerTimers[playerSlot].PB = FormatTime(pbTicks);
+                Server.NextFrame(() => playerTimers[playerSlot].PB = FormatTime(pbTicks));
             }
             else
             {
-                playerTimers[playerSlot].PB = "n/a";
+                Server.NextFrame(() => playerTimers[playerSlot].PB = "n/a");
             }
 
             if (toHUD == false)
