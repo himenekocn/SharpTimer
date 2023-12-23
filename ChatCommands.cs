@@ -489,10 +489,14 @@ namespace SharpTimer
         }
 
         [ConsoleCommand("css_stver", "Prints SharpTimer Version")]
-        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
         public void STVerCommand(CCSPlayerController? player, CommandInfo command)
-        {
-            if (!IsAllowedPlayer(player)) return;
+        {         
+            if (!IsAllowedPlayer(player))
+            {
+                Console.WriteLine($"This server is running SharpTimer v{ModuleVersion}");
+                return;
+            } 
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {

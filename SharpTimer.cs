@@ -1,10 +1,8 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
-using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
-using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -235,7 +233,7 @@ namespace SharpTimer
             Console.WriteLine("[SharpTimer] Plugin Loaded");
         }
 
-        private void CheckPlayerActions(CCSPlayerController? player)
+        private void CheckPlayerCoords(CCSPlayerController? player)
         {
             if (!IsAllowedPlayer(player)) return;
 

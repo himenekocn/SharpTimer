@@ -17,11 +17,11 @@ namespace SharpTimer
 
             if (string.IsNullOrEmpty(args))
             {
-                defaultServerHostname = $" {ParseColorToSymbol(primaryHUDcolor)} A SharpTimer Server {ChatColors.White}";
+                defaultServerHostname = $"A SharpTimer Server";
                 return;
             }
 
-            defaultServerHostname = $" {ParseColorToSymbol(primaryHUDcolor)} {args} {ChatColors.White}";
+            defaultServerHostname = $"{args}";
         }
 
         [ConsoleCommand("sharptimer_autoset_mapinfo_hostname_enabled", "Whether Map Name and Map Tier (if available) should be put into the hostname or not. Default value: false")]

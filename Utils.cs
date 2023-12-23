@@ -60,7 +60,7 @@ namespace SharpTimer
                                   ? $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='{primaryHUDcolor}'>{playerTime}</font><br>"
                                   : "";
 
-                string veloLine = $"<font class='fontSize-l' color='{tertiaryHUDcolor}'>Speed:</font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
+                string veloLine = $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
                 string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()), playerTimers[player.Slot].TimerTicks)}";
 
                 string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
@@ -95,7 +95,7 @@ namespace SharpTimer
 
                 if (!useTriggers)
                 {
-                    CheckPlayerActions(player);
+                    CheckPlayerCoords(player);
                 }
 
                 if (playerTimers[player.Slot].MovementService != null && removeCrouchFatigueEnabled == true)

@@ -11,8 +11,7 @@ namespace SharpTimer
         private Dictionary<int, CCSPlayerController> connectedPlayers = new Dictionary<int, CCSPlayerController>();
 
         public override string ModuleName => "SharpTimer";
-        public override string ModuleVersion => "0.1.4";
-
+        public override string ModuleVersion => $"0.1.4 - {new DateTime(Builtin.CompileTime, DateTimeKind.Utc)}";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS Timer Plugin";
         public string msgPrefix = $"[SharpTimer] ";
