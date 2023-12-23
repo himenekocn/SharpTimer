@@ -101,10 +101,7 @@ namespace SharpTimer
                 {
                     if (removeCollisionEnabled == true && player.PlayerPawn != null)
                     {
-                        player.PlayerPawn.Value.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
-                        player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
-                        VirtualFunctionVoid<nint> collisionRulesChanged = new VirtualFunctionVoid<nint>(player.PlayerPawn.Value.Handle, OnCollisionRulesChangedOffset.Get());
-                        collisionRulesChanged.Invoke(player.PlayerPawn.Value.Handle);
+                        RemovePlayerCollision(player);
                     }
                     return HookResult.Continue;
                 }

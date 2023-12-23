@@ -1,6 +1,8 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Timers;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
@@ -43,6 +45,7 @@ namespace SharpTimer
 
                     Server.NextFrame(() => Server.PrintToChatAll(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}"));
                 }
+
             }, TimerFlags.REPEAT);
             isADTimerRunning = true;
         }
@@ -103,8 +106,13 @@ namespace SharpTimer
                     if (playerTimers[player.Slot].MovementService.DuckSpeed != 7.0f) playerTimers[player.Slot].MovementService.DuckSpeed = 7.0f;
                 }
 
-                if(playerTimers[player.Slot].TimerRank == null || playerTimers[player.Slot].PB == null) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
+                if (playerTimers[player.Slot].TimerRank == null || playerTimers[player.Slot].PB == null) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
 
+                if(removeCollisionEnabled == true)
+                {
+                    if(player.PlayerPawn.Value.Collision.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING || player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING) RemovePlayerCollision(player);
+                }
+                    
                 if (!player.PlayerPawn.Value.OnGroundLastTick)
                 {
                     playerTimers[player.Slot].TicksInAir++;
@@ -465,6 +473,16 @@ namespace SharpTimer
             var adjustedY = normalizedY * velocity; // Adjusted speed limit
             player.PlayerPawn.Value.AbsVelocity.X = (float)adjustedX;
             player.PlayerPawn.Value.AbsVelocity.Y = (float)adjustedY;
+        }
+
+        private void RemovePlayerCollision(CCSPlayerController? player)
+        {
+            if(removeCollisionEnabled == false || player == null) return;
+            
+            player.PlayerPawn.Value.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
+            player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
+            VirtualFunctionVoid<nint> collisionRulesChanged = new VirtualFunctionVoid<nint>(player.PlayerPawn.Value.Handle, OnCollisionRulesChangedOffset.Get());
+            collisionRulesChanged.Invoke(player.PlayerPawn.Value.Handle);
         }
 
         private Vector? FindStartTriggerPos()
