@@ -47,7 +47,7 @@ namespace SharpTimer
             isADTimerRunning = true;
         }
 
-        public void PrintTimerHud(CCSPlayerController player)
+        public void TimerOnTick(CCSPlayerController player)
         {
             if (IsAllowedPlayer(player))
             {
@@ -55,46 +55,35 @@ namespace SharpTimer
                 string formattedPlayerVel = Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()).ToString().PadLeft(4, '0');
                 string formattedPlayerPre = Math.Round(ParseVector(playerTimers[player.Slot].PreSpeed ?? "0 0 0").Length2D()).ToString();
                 string playerTime = FormatTime(playerTimers[player.Slot].TimerTicks);
-                string forwardKey = "W";
-                string leftKey = "A";
+
+                string timerLine = playerTimers[player.Slot].IsTimerRunning
+                                  ? $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='{primaryHUDcolor}'>{playerTime}</font><br>"
+                                  : "";
+
+                string veloLine = $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
+
+                string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
+                                  $"{(currentMapTier != null ? $" | {currentMapTier}" : "")}</font><br>";
+
+                string forwardKey = playerTimers[player.Slot].Azerty ? "Z" : "W";
+                string leftKey = playerTimers[player.Slot].Azerty ? "Q" : "A";
                 string backKey = "S";
                 string rightKey = "D";
 
-                if (playerTimers[player.Slot].Azerty == true)
-                {
-                    forwardKey = "Z";
-                    leftKey = "Q";
-                    backKey = "S";
-                    rightKey = "D";
-                }
+                string keysLine = $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
+                                  $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
+                                  $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
+                                  $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
+                                  $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
+                                  $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>";
 
-                if (playerTimers[player.Slot].IsTimerRunning)
-                {
-                    if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
-                        $"<font color='gray'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='{primaryHUDcolor}'>{playerTime}</font><br>" +
-                        $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>" +
-                        $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}</font><br>" +
-                        $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                        $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
+                if (playerTimers[player.Slot].IsTimerRunning) playerTimers[player.Slot].TimerTicks++;
 
-                    playerTimers[player.Slot].TimerTicks++;
-                }
-                else
-                {
-                    if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
-                        $"<font color='{tertiaryHUDcolor}'>Speed:</font> <font color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>" +
-                        $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}</font><br>" +
-                        $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
-                        $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                        $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}</font>");
-                }
+                if (playerTimers[player.Slot].HideTimerHud != true) player.PrintToCenterHtml(
+                        $"{timerLine}" +
+                        $"{veloLine}" +
+                        $"{infoLine}" +
+                        $"{keysLine}");
 
                 if (!useTriggers)
                 {
@@ -109,10 +98,7 @@ namespace SharpTimer
                 if (!player.PlayerPawn.Value.OnGroundLastTick)
                 {
                     playerTimers[player.Slot].TicksInAir++;
-                    if (playerTimers[player.Slot].TicksInAir == 1)
-                    {
-                        playerTimers[player.Slot].PreSpeed = $"{player.PlayerPawn.Value.AbsVelocity.X} {player.PlayerPawn.Value.AbsVelocity.Y} {player.PlayerPawn.Value.AbsVelocity.Z}";
-                    }
+                    if (playerTimers[player.Slot].TicksInAir == 1) playerTimers[player.Slot].PreSpeed = $"{player.PlayerPawn.Value.AbsVelocity.X} {player.PlayerPawn.Value.AbsVelocity.Y} {player.PlayerPawn.Value.AbsVelocity.Z}";
                 }
                 else
                 {
@@ -126,6 +112,7 @@ namespace SharpTimer
                 playerTimers[player.Slot].IsTimerRunning = false;
                 playerTimers[player.Slot].TimerTicks = 0;
                 playerCheckpoints.Remove(player.Slot);
+                playerTimers[player.Slot].TicksSinceLastCmd++;
             }
         }
 
@@ -144,8 +131,8 @@ namespace SharpTimer
         private bool IsValidEndTriggerName(string triggerName)
         {
             string[] validTriggers = {  "map_end",
-                                        "timer_endzone", 
-                                        "zone_end", 
+                                        "timer_endzone",
+                                        "zone_end",
                                         currentMapEndTrigger };
 
             return validTriggers.Contains(triggerName);

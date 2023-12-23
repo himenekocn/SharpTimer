@@ -144,7 +144,7 @@ namespace SharpTimer
                 {
                     var player = playerEntry.Value;
                     if(player == null) continue;
-                    PrintTimerHud(player);
+                    TimerOnTick(player);
                 }
             });
 
