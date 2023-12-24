@@ -64,7 +64,7 @@ namespace SharpTimer
                                   : "";
 
                 string veloLine = $"<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font><br>";
-                string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()), playerTimers[player.Slot].TimerTicks)}";
+                string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()))}";
 
                 string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
                                   $"{(currentMapTier != null ? $" | {currentMapTier}" : "")}</font>" +
@@ -134,7 +134,7 @@ namespace SharpTimer
             }
         }
 
-        private string GetSpeedBar(double speed, int rainbowTicks)
+        private string GetSpeedBar(double speed)
         {
             const int barLength = 80;
 
@@ -145,7 +145,7 @@ namespace SharpTimer
             {
                 if (i < barProgress)
                 {
-                    speedBar += $"<font class='fontSize-s' color='{(speed >= altVeloMaxSpeed ? GetRainbowColor(rainbowTicks) : primaryHUDcolor)}'>|</font>";
+                    speedBar += $"<font class='fontSize-s' color='{(speed >= altVeloMaxSpeed ? GetRainbowColor() : primaryHUDcolor)}'>|</font>";
                 }
                 else
                 {
@@ -156,11 +156,11 @@ namespace SharpTimer
             return $"{speedBar}<br>";
         }
 
-        private string GetRainbowColor(int rainbowTicks)
+        private string GetRainbowColor()
         {
             const double rainbowPeriod = 100.0; // Adjust this value to control the speed of the rainbow
 
-            double percentage = (rainbowTicks % rainbowPeriod) / rainbowPeriod;
+            double percentage = (Server.EngineTime % rainbowPeriod) / rainbowPeriod;
             double red = Math.Sin(2 * Math.PI * (percentage)) * 127 + 128;
             double green = Math.Sin(2 * Math.PI * (percentage + 1.0 / 3.0)) * 127 + 128;
             double blue = Math.Sin(2 * Math.PI * (percentage + 2.0 / 3.0)) * 127 + 128;
