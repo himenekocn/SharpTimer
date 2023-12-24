@@ -1,4 +1,5 @@
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Utils;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
@@ -18,7 +19,6 @@ namespace SharpTimer
         public string primaryHUDcolor = "green";
         public string secondaryHUDcolor = "orange";
         public string tertiaryHUDcolor = "white";
-        public string? currentMapTier = null;
         public string currentMapStartTrigger = "trigger_startzone";
         public string currentMapEndTrigger = "trigger_endzone";
         public Vector currentMapStartC1 = new Vector(0, 0, 0);
@@ -26,6 +26,8 @@ namespace SharpTimer
         public Vector currentMapEndC1 = new Vector(0, 0, 0);
         public Vector currentMapEndC2 = new Vector(0, 0, 0);
         public Vector? currentRespawnPos = null;
+        public string? currentMapType = null;
+        public int? currentMapTier = null;
 
         public bool useMySQL = false;
 
@@ -64,7 +66,7 @@ namespace SharpTimer
         public string? mySQLpath;
         public string? playerRecordsPath;
         public string? currentMapName;
-        public string? defaultServerHostname;
+        public string? defaultServerHostname = ConVar.Find("hostname").StringValue;
 
         private readonly WIN_LINUX<int> OnCollisionRulesChangedOffset = new WIN_LINUX<int>(174, 173);
     }

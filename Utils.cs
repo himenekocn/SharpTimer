@@ -67,7 +67,8 @@ namespace SharpTimer
                 string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()))}";
 
                 string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
-                                  $"{(currentMapTier != null ? $" | {currentMapTier}" : "")}</font>" +
+                                  $"{(currentMapTier != null ? $" | Tier: {currentMapTier}" : "")}" +
+                                  $"{(currentMapType != null ? $" | {currentMapType}" : "")}</font>" +
                                   (alternativeSpeedometer ? "" : "<br>");
 
                 string forwardKey = playerTimers[player.Slot].Azerty ? "Z" : "W";
@@ -108,11 +109,11 @@ namespace SharpTimer
 
                 if (playerTimers[player.Slot].TimerRank == null || playerTimers[player.Slot].PB == null) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
 
-                if(removeCollisionEnabled == true)
+                if (removeCollisionEnabled == true)
                 {
-                    if(player.PlayerPawn.Value.Collision.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING || player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING) RemovePlayerCollision(player);
+                    if (player.PlayerPawn.Value.Collision.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING || player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING) RemovePlayerCollision(player);
                 }
-                    
+
                 if (!player.PlayerPawn.Value.OnGroundLastTick)
                 {
                     playerTimers[player.Slot].TicksInAir++;
@@ -158,7 +159,7 @@ namespace SharpTimer
 
         private string GetRainbowColor()
         {
-            const double rainbowPeriod = 100.0; // Adjust this value to control the speed of the rainbow
+            const double rainbowPeriod = 2.0;
 
             double percentage = (Server.EngineTime % rainbowPeriod) / rainbowPeriod;
             double red = Math.Sin(2 * Math.PI * (percentage)) * 127 + 128;
@@ -477,8 +478,8 @@ namespace SharpTimer
 
         private void RemovePlayerCollision(CCSPlayerController? player)
         {
-            if(removeCollisionEnabled == false || player == null) return;
-            
+            if (removeCollisionEnabled == false || player == null) return;
+
             player.PlayerPawn.Value.Collision.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
             player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
             VirtualFunctionVoid<nint> collisionRulesChanged = new VirtualFunctionVoid<nint>(player.PlayerPawn.Value.Handle, OnCollisionRulesChangedOffset.Get());
@@ -495,6 +496,7 @@ namespace SharpTimer
 
                 if (IsValidStartTriggerName(trigger.Entity.Name.ToString()))
                 {
+                    Console.WriteLine($"found trigger respawnpos at {trigger.CBodyComponent?.SceneNode?.AbsOrigin.X} {trigger.CBodyComponent?.SceneNode?.AbsOrigin.Y} {trigger.CBodyComponent?.SceneNode?.AbsOrigin.Z}");
                     return trigger.CBodyComponent?.SceneNode?.AbsOrigin;
                 }
             }
@@ -738,20 +740,62 @@ namespace SharpTimer
             }
         }
 
-        private void AddMapInfoToHostname()
+        private async Task<(int? Tier, string? Type)> FineMapInfoFromHTTP(string url)
         {
-            if (autosetHostname == false) return;
-
-            if (currentMapTier != null)
+            try
             {
-                Server.ExecuteCommand($"hostname {defaultServerHostname} | {currentMapTier} {Server.MapName}");
-            }
-            else
-            {
-                Server.ExecuteCommand($"hostname {defaultServerHostname} | {Server.MapName}");
-            }
+                using (HttpClient client = new HttpClient())
+                {
+                    var response = await client.GetStringAsync(url);
+                    var jsonDocument = JsonDocument.Parse(response);
 
-            Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+                    if (jsonDocument.RootElement.TryGetProperty(currentMapName, out var mapInfo))
+                    {
+                        if (mapInfo.TryGetProperty("Tier", out var tierElement) && mapInfo.TryGetProperty("Type", out var typeElement))
+                        {
+                            int tier = tierElement.GetInt32();
+                            string type = typeElement.GetString();
+                            return (tier, type);
+                        }
+                    }
+
+                    return (null, null);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in FineMapInfoFromHTTP: {ex.Message}");
+                return (null, null);
+            }
+        }
+
+        private async Task AddMapInfoToHostname()
+        {
+            if (!autosetHostname) return;
+
+            string mapInfoSource = GetMapInfoSource();
+            var (mapTier, mapType) = await FineMapInfoFromHTTP(mapInfoSource);
+            currentMapTier = mapTier;
+            currentMapType = mapType;
+            string tierString = currentMapTier != null ? $" | Tier: {currentMapTier}" : "";
+            string typeString = currentMapType != null ? $" | {currentMapType}" : "";
+
+            Server.NextFrame(() =>
+            {
+                Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString} | {Server.MapName}");
+                Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+            });
+        }
+
+        private string GetMapInfoSource()
+        {
+            return currentMapName switch
+            {
+                var name when name.Contains("kz_") => "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/kz_.json",
+                var name when name.Contains("bhop_") => "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/bhop_.json",
+                var name when name.Contains("surf_") => "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/surf_.json",
+                _ => null
+            };
         }
 
         private void OnMapStartHandler(string mapName)
@@ -761,6 +805,7 @@ namespace SharpTimer
                 Server.ExecuteCommand("sv_autoexec_mapname_cfg 0");
                 Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
                 if (removeCrouchFatigueEnabled == true) Server.ExecuteCommand("sv_timebetweenducks 0");
+                LoadConfig();
             });
         }
 
@@ -770,7 +815,7 @@ namespace SharpTimer
             Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
             Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
 
-            AddMapInfoToHostname();
+            _ = AddMapInfoToHostname();
 
             if (srEnabled == true) ServerRecordADtimer();
 
@@ -782,23 +827,13 @@ namespace SharpTimer
 
             currentMapName = Server.MapName;
 
-            string mapdataFileName = $"SharpTimer/MapData/{currentMapName}.json"; // Assuming the map JSON files are in the SharpTimer folder
+            string mapdataFileName = $"SharpTimer/MapData/{currentMapName}.json";
             string mapdataPath = Path.Join(Server.GameDirectory + "/csgo/cfg", mapdataFileName);
 
             if (File.Exists(mapdataPath))
             {
                 string json = File.ReadAllText(mapdataPath);
                 var mapInfo = JsonSerializer.Deserialize<MapInfo>(json);
-
-                if (!string.IsNullOrEmpty(mapInfo.MapTier))
-                {
-                    currentMapTier = mapInfo.MapTier;
-                }
-
-                if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
-                {
-                    currentRespawnPos = ParseVector(mapInfo.RespawnPos);
-                }
 
                 if (!string.IsNullOrEmpty(mapInfo.MapStartC1) && !string.IsNullOrEmpty(mapInfo.MapStartC2) && !string.IsNullOrEmpty(mapInfo.MapEndC1) && !string.IsNullOrEmpty(mapInfo.MapEndC2))
                 {
@@ -815,10 +850,20 @@ namespace SharpTimer
                     currentMapEndTrigger = mapInfo.MapEndTrigger;
                     useTriggers = true;
                 }
+
+                if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
+                {
+                    currentRespawnPos = ParseVector(mapInfo.RespawnPos);
+                }
+                else
+                {
+                    currentRespawnPos = FindStartTriggerPos();
+                }
             }
             else
             {
                 Console.WriteLine($"Map data json not found for map: {currentMapName}! Using default trigger names instead!");
+                currentRespawnPos = FindStartTriggerPos();
                 useTriggers = true;
             }
 

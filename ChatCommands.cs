@@ -16,7 +16,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddStartZoneCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].IsAddingStartZone == true)
             {
@@ -45,7 +45,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddEndZoneCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].IsAddingEndZone == true)
             {
@@ -74,7 +74,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddRespawnPosCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             // Get the player's current position
             Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
@@ -90,7 +90,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SaveZonesCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].EndZoneC1 == null || playerTimers[player.Slot].EndZoneC2 == null || playerTimers[player.Slot].StartZoneC1 == null || playerTimers[player.Slot].StartZoneC2 == null || playerTimers[player.Slot].RespawnPos == null)
             {
@@ -126,7 +126,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddZoneCorner1Command(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             // Get the player's current position
             Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
@@ -154,7 +154,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AddZoneCorner2Command(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             // Get the player's current position
             Vector currentPosition = player.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0);
@@ -186,7 +186,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AdminNoclipCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             playerTimers[player.Slot].IsNoclipEnabled = playerTimers[player.Slot].IsNoclipEnabled ? false : true;
 
@@ -204,7 +204,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void AzertySwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -217,7 +217,7 @@ namespace SharpTimer
             playerTimers[player.Slot].Azerty = playerTimers[player.Slot].Azerty ? false : true;
 
             player.PrintToChat($"Azerty Layout set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].Azerty}");
-          
+
             //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "Azerty", playerTimers[player.Slot].Azerty);
 
         }
@@ -226,7 +226,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void HUDSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -248,7 +248,7 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SoundsSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
-            if(!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player)) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -429,36 +429,17 @@ namespace SharpTimer
             // Remove checkpoints for the current player
             playerCheckpoints.Remove(player.Slot);
 
-            if (useTriggers == true)
+
+            if (currentRespawnPos != null)
             {
-                if (currentRespawnPos != null)
-                {
-                    player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
-                }
-                else
-                {
-                    if (FindStartTriggerPos() != null)
-                    {
-                        player.PlayerPawn.Value.Teleport(FindStartTriggerPos(), player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
-                    }
-                    else
-                    {
-                        player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
-                    }
-                }
+                player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                Console.WriteLine($"{player.PlayerName} css_r to {currentRespawnPos}");
             }
             else
             {
-                if (currentRespawnPos != null)
-                {
-                    player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
-                }
-                else
-                {
-                    player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
-                }
-
+                player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
             }
+
             playerTimers[player.Slot].IsTimerRunning = false;
             playerTimers[player.Slot].TimerTicks = 0;
             playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
@@ -491,12 +472,12 @@ namespace SharpTimer
         [ConsoleCommand("css_stver", "Prints SharpTimer Version")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
         public void STVerCommand(CCSPlayerController? player, CommandInfo command)
-        {         
+        {
             if (!IsAllowedPlayer(player))
             {
                 Console.WriteLine($"This server is running SharpTimer v{ModuleVersion}");
                 return;
-            } 
+            }
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
