@@ -296,7 +296,7 @@ namespace SharpTimer
                 sortedRecords = GetSortedRecords();
             }
 
-            if (sortedRecords.Count == 0)
+            if (sortedRecords.Count == 0 && IsAllowedPlayer(player))
             {
                 Server.NextFrame(() => player.PrintToChat(msgPrefix + $" No records available for {currentMapName}."));
                 //ReplyToPlayer(player, msgPrefix + $" No records available for {currentMapName}.");
@@ -304,8 +304,7 @@ namespace SharpTimer
             }
 
 
-            Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Top 10 Records for {currentMapName}:"));
-            //ReplyToPlayer(player, msgPrefix + $" Top 10 Records for {currentMapName}:");
+            if (IsAllowedPlayer(player)) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Top 10 Records for {currentMapName}:"));
             int rank = 1;
 
             foreach (var kvp in sortedRecords.Take(10))
@@ -315,7 +314,7 @@ namespace SharpTimer
 
                 Server.NextFrame(() =>
                 {
-                    player.PrintToChat(msgPrefix + $" #{rank}: {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}");
+                    if (IsAllowedPlayer(player)) player.PrintToChat(msgPrefix + $" #{rank}: {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}");
                     rank++;
                 });
             }
@@ -353,18 +352,30 @@ namespace SharpTimer
 
             playerTimers[playerSlot].TimerRank = ranking;
             if (pbTicks != 0)
-            {
-                Server.NextFrame(() => playerTimers[playerSlot].PB = FormatTime(pbTicks));
+            {              
+                Server.NextFrame(() =>
+                {
+                    if (!IsAllowedPlayer(player)) return;
+                    Server.NextFrame(() => playerTimers[playerSlot].PB = FormatTime(pbTicks));
+                });
             }
             else
             {
-                Server.NextFrame(() => playerTimers[playerSlot].PB = "n/a");
+                Server.NextFrame(() =>
+                {
+                    if (!IsAllowedPlayer(player)) return;
+                    playerTimers[playerSlot].PB = "n/a";
+                });
             }
 
             if (toHUD == false)
             {
-                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" You are currently {ParseColorToSymbol(primaryHUDcolor)}{ranking}"));
-                if (pbTicks != 0) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Your current PB: {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(pbTicks)}"));
+                Server.NextFrame(() =>
+                {
+                    if (!IsAllowedPlayer(player)) return;
+                    player.PrintToChat(msgPrefix + $" You are currently {ParseColorToSymbol(primaryHUDcolor)}{ranking}");
+                    if (pbTicks != 0) player.PrintToChat(msgPrefix + $" Your current PB: {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(pbTicks)}");
+                });
             }
         }
 
@@ -401,14 +412,20 @@ namespace SharpTimer
                 return;
             }
 
-            Server.NextFrame(() => player.PrintToChat($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
-
+            if (IsAllowedPlayer(player))
+            {
+                Server.NextFrame(() => player.PrintToChat($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
+            }
+            
             foreach (var kvp in sortedRecords.Take(1))
             {
                 string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
                 int timerTicks = kvp.Value.TimerTicks; // Get the timer ticks from the dictionary value
 
-                Server.NextFrame(() => player.PrintToChat(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}"));
+                if (IsAllowedPlayer(player))
+                {
+                    Server.NextFrame(() => player.PrintToChat(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}"));
+                }
             }
         }
 
