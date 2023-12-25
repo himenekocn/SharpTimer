@@ -7,11 +7,11 @@
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_akai_final": {
+    "surf_akai": {
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_and_destroy_fix": {
+    "surf_and_destroy": {
         "Tier": 1,
         "Type": "Linear"
     },
@@ -39,7 +39,7 @@
         "Tier": 1,
         "Type": "Staged"
     },
-    "surf_benevolent_refix": {
+    "surf_benevolent": {
         "Tier": 1,
         "Type": "Staged"
     },
@@ -75,7 +75,7 @@
         "Tier": 1,
         "Type": "Staged"
     },
-    "surf_chaos_fix": {
+    "surf_chaos": {
         "Tier": 1,
         "Type": "Staged"
     },
@@ -143,7 +143,7 @@
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_leet_xl_beta7z": {
+    "surf_leet_xl": {
         "Tier": 1,
         "Type": "Linear"
     },
@@ -179,11 +179,11 @@
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_mom_fix": {
+    "surf_mom": {
         "Tier": 1,
         "Type": "Staged"
     },
-    "surf_network2008_final": {
+    "surf_network2008": {
         "Tier": 1,
         "Type": "Linear"
     },
@@ -207,7 +207,7 @@
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_prelude_fix": {
+    "surf_prelude": {
         "Tier": 1,
         "Type": "Linear"
     },
@@ -215,7 +215,7 @@
         "Tier": 1,
         "Type": "Staged"
     },
-    "surf_rebel_resistance_final3": {
+    "surf_rebel_resistance": {
         "Tier": 1,
         "Type": "Linear"
     },
@@ -223,11 +223,11 @@
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_satellite_fix": {
+    "surf_satellite": {
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_school_fix": {
+    "surf_school": {
         "Tier": 1,
         "Type": "Staged-Linear"
     },
@@ -275,7 +275,7 @@
         "Tier": 1,
         "Type": "Linear"
     },
-    "surf_004_fix": {
+    "surf_004": {
         "Tier": 2,
         "Type": "Linear"
     },
@@ -335,7 +335,7 @@
         "Tier": 2,
         "Type": "Staged-Linear"
     },
-    "surf_aqua_fix": {
+    "surf_aqua": {
         "Tier": 2,
         "Type": "Linear"
     },
@@ -347,11 +347,11 @@
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_ardon_fix": {
+    "surf_ardon": {
         "Tier": 2,
         "Type": "Linear"
     },
-    "surf_autumn_fix": {
+    "surf_autumn": {
         "Tier": 2,
         "Type": "Staged"
     },
@@ -375,7 +375,7 @@
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_cavemissile_fix": {
+    "surf_cavemissile": {
         "Tier": 2,
         "Type": "Linear"
     },
@@ -387,7 +387,7 @@
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_commune_beta11": {
+    "surf_commune": {
         "Tier": 2,
         "Type": "Staged"
     },
@@ -455,7 +455,7 @@
         "Tier": 2,
         "Type": "Linear"
     },
-    "surf_elements_beta3": {
+    "surf_elements": {
         "Tier": 2,
         "Type": "Staged"
     },
@@ -483,15 +483,15 @@
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_faint_fix": {
+    "surf_faint": {
         "Tier": 2,
         "Type": "Linear"
     },
-    "surf_flyin_fortress_fix": {
+    "surf_flyin_fortress": {
         "Tier": 2,
         "Type": "Linear"
     },
-    "surf_fortum_fix": {
+    "surf_fortum": {
         "Tier": 2,
         "Type": "Staged"
     },
@@ -543,7 +543,7 @@
         "Tier": 2,
         "Type": "Linear"
     },
-    "surf_harmony_fix": {
+    "surf_harmony": {
         "Tier": 2,
         "Type": "Staged"
     },
@@ -555,7 +555,7 @@
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_hotwheels_fix": {
+    "surf_hotwheels": {
         "Tier": 2,
         "Type": "Linear"
     },
@@ -739,11 +739,11 @@
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_presmon_fix": {
+    "surf_presmon": {
         "Tier": 2,
         "Type": "Staged"
     },
-    "surf_progress_fix": {
+    "surf_progress": {
         "Tier": 2,
         "Type": "Staged-Linear"
     },
@@ -791,7 +791,7 @@
         "Tier": 2,
         "Type": "Linear"
     },
-    "surf_seaworld_fix": {
+    "surf_seaworld": {
         "Tier": 2,
         "Type": "Linear"
     },
@@ -891,7 +891,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_2012_beta12": {
+    "surf_2012": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -903,7 +903,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_acp_fix": {
+    "surf_acp": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -935,7 +935,7 @@
         "Tier": 3,
         "Type": "Staged-Linear"
     },
-    "surf_ataque_final": {
+    "surf_ataque": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -995,7 +995,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_canisius2_fix": {
+    "surf_canisius2": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1015,11 +1015,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_color_fix": {
-        "Tier": 3,
-        "Type": "Staged"
-    },
-    "surf_commune_again_beta5": {
+    "surf_color": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1063,7 +1059,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_deceptive_final": {
+    "surf_deceptive": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1075,7 +1071,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_destiny_fixed": {
+    "surf_destinyed": {
         "Tier": 3,
         "Type": "Linear"
     },
@@ -1119,7 +1115,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_entropy_finalv2": {
+    "surf_entropyv2": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1207,7 +1203,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_golden_refix": {
+    "surf_golden": {
         "Tier": 3,
         "Type": "Linear"
     },
@@ -1231,7 +1227,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_helium_fix": {
+    "surf_helium": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1251,7 +1247,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_imagine_fix": {
+    "surf_imagine": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1271,7 +1267,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_insideout_final": {
+    "surf_insideout": {
         "Tier": 3,
         "Type": "Linear"
     },
@@ -1343,7 +1339,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_luminaris_refix": {
+    "surf_luminaris": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1399,7 +1395,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_mynah_final": {
+    "surf_mynah": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1471,7 +1467,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_palette_fix": {
+    "surf_palette": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1511,15 +1507,15 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_plaguelands_beta7a": {
+    "surf_plaguelands": {
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_plethora_fix": {
+    "surf_plethora": {
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_porn_fix": {
+    "surf_porn": {
         "Tier": 3,
         "Type": "Linear"
     },
@@ -1539,11 +1535,11 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_proximity_final": {
+    "surf_proximity": {
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_psi_fixed": {
+    "surf_psied": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1559,7 +1555,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_quasar_final": {
+    "surf_quasar": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1575,7 +1571,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_razer_final": {
+    "surf_razer": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1639,7 +1635,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_sequoia_fix": {
+    "surf_sequoia": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1663,7 +1659,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_slob2_fix": {
+    "surf_slob2": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1671,7 +1667,7 @@
         "Tier": 3,
         "Type": "Staged"
     },
-    "surf_smaragd_fix": {
+    "surf_smaragd": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1771,7 +1767,7 @@
         "Tier": 3,
         "Type": "Linear"
     },
-    "surf_tronia_refix": {
+    "surf_tronia": {
         "Tier": 3,
         "Type": "Staged"
     },
@@ -1859,11 +1855,11 @@
         "Tier": 4,
         "Type": "Staged-Linear"
     },
-    "surf_adrift_fix": {
+    "surf_adrift": {
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_adventure_final": {
+    "surf_adventure": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -1915,7 +1911,7 @@
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_banana_fix": {
+    "surf_banana": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -1979,7 +1975,7 @@
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_chateau_fix": {
+    "surf_chateau": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -1987,7 +1983,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_commune_too_beta5": {
+    "surf_commune_too": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -1995,7 +1991,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_concretejungle_fix": {
+    "surf_concretejungle": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2039,7 +2035,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_divided_fix": {
+    "surf_divided": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2047,7 +2043,7 @@
         "Tier": 4,
         "Type": "Staged-Linear"
     },
-    "surf_dynamics_fixed": {
+    "surf_dynamicsed": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2071,7 +2067,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_eternal_beta": {
+    "surf_eternal": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2079,7 +2075,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_exclave_fix": {
+    "surf_exclave": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2091,7 +2087,7 @@
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_finesse_final": {
+    "surf_finesse": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2131,7 +2127,7 @@
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_gauntlet_final": {
+    "surf_gauntlet": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2155,7 +2151,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_halloween_fix": {
+    "surf_halloween": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2287,7 +2283,7 @@
         "Tier": 4,
         "Type": "Staged-Linear"
     },
-    "surf_medley_fix": {
+    "surf_medley": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2295,7 +2291,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_mephobia_final": {
+    "surf_mephobia": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2383,7 +2379,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_prolix_fix": {
+    "surf_prolix": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2395,7 +2391,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_pyzire_fix": {
+    "surf_pyzire": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2415,7 +2411,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_quickie_fix": {
+    "surf_quickie": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2495,7 +2491,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_sensation_fix": {
+    "surf_sensation": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2543,7 +2539,7 @@
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_sluice_final": {
+    "surf_sluice": {
         "Tier": 4,
         "Type": "Linear"
     },
@@ -2563,7 +2559,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_sunset2_fix": {
+    "surf_sunset2": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2603,7 +2599,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_triggered_fix": {
+    "surf_triggered": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2615,7 +2611,7 @@
         "Tier": 4,
         "Type": "Staged"
     },
-    "surf_ultimate_fix": {
+    "surf_ultimate": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2627,7 +2623,7 @@
         "Tier": 4,
         "Type": "Linear"
     },
-    "surf_vector_final": {
+    "surf_vector": {
         "Tier": 4,
         "Type": "Staged"
     },
@@ -2703,7 +2699,7 @@
         "Tier": 5,
         "Type": "Linear"
     },
-    "surf_cinnamon_fix": {
+    "surf_cinnamon": {
         "Tier": 5,
         "Type": "Linear"
     },
@@ -2715,7 +2711,7 @@
         "Tier": 5,
         "Type": "Linear"
     },
-    "surf_core_refix": {
+    "surf_core": {
         "Tier": 5,
         "Type": "Staged"
     },
@@ -2731,7 +2727,7 @@
         "Tier": 5,
         "Type": "Linear"
     },
-    "surf_diamond_beta1": {
+    "surf_diamond": {
         "Tier": 5,
         "Type": "Staged"
     },
@@ -2775,11 +2771,11 @@
         "Tier": 5,
         "Type": "Staged"
     },
-    "surf_eon_fix": {
+    "surf_eon": {
         "Tier": 5,
         "Type": "Linear"
     },
-    "surf_eryr2_fix": {
+    "surf_eryr2": {
         "Tier": 5,
         "Type": "Staged"
     },
@@ -2815,7 +2811,7 @@
         "Tier": 5,
         "Type": "Staged"
     },
-    "surf_gurus_fix": {
+    "surf_gurus": {
         "Tier": 5,
         "Type": "Staged"
     },
@@ -2887,7 +2883,7 @@
         "Tier": 5,
         "Type": "Staged"
     },
-    "surf_minecraft_fix": {
+    "surf_minecraft": {
         "Tier": 5,
         "Type": "Linear"
     },
@@ -2923,7 +2919,7 @@
         "Tier": 5,
         "Type": "Linear"
     },
-    "surf_primero_fix": {
+    "surf_primero": {
         "Tier": 5,
         "Type": "Linear"
     },
@@ -2931,7 +2927,7 @@
         "Tier": 5,
         "Type": "Staged"
     },
-    "surf_revolution_fix": {
+    "surf_revolution": {
         "Tier": 5,
         "Type": "Staged"
     },
@@ -3011,7 +3007,7 @@
         "Tier": 5,
         "Type": "Linear"
     },
-    "surf_tycho_fix": {
+    "surf_tycho": {
         "Tier": 5,
         "Type": "Staged"
     },
@@ -3095,7 +3091,7 @@
         "Tier": 6,
         "Type": "Staged"
     },
-    "surf_jusched_beta1": {
+    "surf_jusched": {
         "Tier": 6,
         "Type": "Linear"
     },
@@ -3135,7 +3131,7 @@
         "Tier": 6,
         "Type": "Staged"
     },
-    "surf_royal_fix": {
+    "surf_royal": {
         "Tier": 6,
         "Type": "Staged"
     },
