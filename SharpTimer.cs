@@ -14,11 +14,13 @@ namespace SharpTimer
     {
         public override void Load(bool hotReload)
         {
+            gameDir = Server.GameDirectory;
+            
             string recordsFileName = "SharpTimer/player_records.json";
-            playerRecordsPath = Path.Join(Server.GameDirectory + "/csgo/cfg", recordsFileName);
+            playerRecordsPath = Path.Join(gameDir + "/csgo/cfg", recordsFileName);
 
             string mysqlConfigFileName = "SharpTimer/mysqlConfig.json";
-            mySQLpath = Path.Join(Server.GameDirectory + "/csgo/cfg", mysqlConfigFileName);
+            mySQLpath = Path.Join(gameDir + "/csgo/cfg", mysqlConfigFileName);
 
             currentMapName = Server.MapName;
 

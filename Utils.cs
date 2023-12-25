@@ -202,6 +202,7 @@ namespace SharpTimer
                      (CsTeam)player.TeamNum == CsTeam.Spectator ||
                      player.Pawn == null ||
                      player.IsBot ||
+                     player.Slot == null ||   // Check if player.Slot is null
                      !connectedPlayers.ContainsKey(player.Slot));
         }
 
@@ -744,6 +745,38 @@ namespace SharpTimer
         {
             try
             {
+                string mapPrefix = "de_";
+
+                switch (currentMapName)
+                {
+                    case var name when name.StartsWith("bhop_"):
+                        mapPrefix = "bhop_";
+                        break;
+                    case var name when name.StartsWith("kz_"):
+                        mapPrefix = "kz_";
+                        break;
+                    case var name when name.StartsWith("surf_"):
+                        mapPrefix = "surf_";
+                        break;
+                }
+
+                string localFilePath = $"{gameDir}/csgo/cfg/SharpTimer/MapData/remote_data/{mapPrefix}.json";
+                if (File.Exists(localFilePath))
+                {
+                    var localJson = await File.ReadAllTextAsync(localFilePath);
+                    var localJsonDocument = JsonDocument.Parse(localJson);
+
+                    if (localJsonDocument.RootElement.TryGetProperty(currentMapName, out var mapInfo))
+                    {
+                        if (mapInfo.TryGetProperty("Tier", out var tierElement) && mapInfo.TryGetProperty("Type", out var typeElement))
+                        {
+                            int tier = tierElement.GetInt32();
+                            string type = typeElement.GetString();
+                            return (tier, type);
+                        }
+                    }
+                }
+
                 using (HttpClient client = new HttpClient())
                 {
                     var response = await client.GetStringAsync(url);
@@ -774,16 +807,17 @@ namespace SharpTimer
             if (!autosetHostname) return;
 
             string mapInfoSource = GetMapInfoSource();
-            var (mapTier, mapType) = await FineMapInfoFromHTTP(mapInfoSource);
-            currentMapTier = mapTier;
-            currentMapType = mapType;
-            string tierString = currentMapTier != null ? $" | Tier: {currentMapTier}" : "";
-            string typeString = currentMapType != null ? $" | {currentMapType}" : "";
+            (currentMapTier, currentMapType) = await FineMapInfoFromHTTP(mapInfoSource);
 
             Server.NextFrame(() =>
             {
-                Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString} | {Server.MapName}");
-                Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+                string tierString = currentMapTier != null ? $" | Tier: {currentMapTier}" : "";
+                string typeString = currentMapType != null ? $" | {currentMapType}" : "";
+
+                string newHostname = $"{defaultServerHostname}{tierString}{typeString} | {Server.MapName}";
+                Server.ExecuteCommand($"hostname {newHostname}");
+
+                Server.NextFrame(() => Console.WriteLine($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}"));
             });
         }
 
@@ -791,9 +825,9 @@ namespace SharpTimer
         {
             return currentMapName switch
             {
-                var name when name.Contains("kz_") => "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/kz_.json",
-                var name when name.Contains("bhop_") => "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/bhop_.json",
-                var name when name.Contains("surf_") => "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/surf_.json",
+                var name when name.Contains("kz_") => remoteKZDataSource,
+                var name when name.Contains("bhop_") => remoteBhopDataSource,
+                var name when name.Contains("surf_") => remoteSurfDataSource,
                 _ => null
             };
         }
@@ -820,15 +854,15 @@ namespace SharpTimer
             if (srEnabled == true) ServerRecordADtimer();
 
             string recordsFileName = "SharpTimer/player_records.json";
-            playerRecordsPath = Path.Join(Server.GameDirectory + "/csgo/cfg", recordsFileName);
+            playerRecordsPath = Path.Join(gameDir + "/csgo/cfg", recordsFileName);
 
             string mysqlConfigFileName = "SharpTimer/mysqlConfig.json";
-            mySQLpath = Path.Join(Server.GameDirectory + "/csgo/cfg", mysqlConfigFileName);
+            mySQLpath = Path.Join(gameDir + "/csgo/cfg", mysqlConfigFileName);
 
             currentMapName = Server.MapName;
 
             string mapdataFileName = $"SharpTimer/MapData/{currentMapName}.json";
-            string mapdataPath = Path.Join(Server.GameDirectory + "/csgo/cfg", mapdataFileName);
+            string mapdataPath = Path.Join(gameDir + "/csgo/cfg", mapdataFileName);
 
             if (File.Exists(mapdataPath))
             {

@@ -110,7 +110,7 @@ namespace SharpTimer
 
             // Load existing map data from the JSON file
             string mapdataFileName = $"SharpTimer/MapData/{currentMapName}.json"; // Use the map name in the filename
-            string mapdataPath = Path.Join(Server.GameDirectory + "/csgo/cfg", mapdataFileName);
+            string mapdataPath = Path.Join(gameDir + "/csgo/cfg", mapdataFileName);
 
             // Save the updated data back to the JSON file without including the map name inside the JSON
             string updatedJson = JsonSerializer.Serialize(newMapInfo, new JsonSerializerOptions { WriteIndented = true });

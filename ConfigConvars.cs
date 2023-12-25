@@ -325,5 +325,53 @@ namespace SharpTimer
                 Console.WriteLine("Invalid fake trigger height value. Please provide a positive integer.");
             }
         }
+
+        [ConsoleCommand("sharptimer_remote_data_bhop", "Override for bhop remote_data")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerRemoteDataOverrideBhop(CCSPlayerController? player, CommandInfo command)
+        {
+
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                remoteBhopDataSource = $"https://raw.githubusercontent.com/DEAFPS/SharpTimer/remote_data/bhop_.json";
+                return;
+            }
+
+            remoteBhopDataSource = $"{args}";
+        }
+
+        [ConsoleCommand("sharptimer_remote_data_kz", "Override for kz remote_data")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerRemoteDataOverrideKZ(CCSPlayerController? player, CommandInfo command)
+        {
+
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                remoteBhopDataSource = $"https://raw.githubusercontent.com/DEAFPS/SharpTimer/remote_data/kz_.json";
+                return;
+            }
+
+            remoteKZDataSource = $"{args}";
+        }
+
+        [ConsoleCommand("sharptimer_remote_data_surf", "Override for surf remote_data")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerRemoteDataOverrideSurf(CCSPlayerController? player, CommandInfo command)
+        {
+
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                remoteBhopDataSource = $"https://raw.githubusercontent.com/DEAFPS/SharpTimer/remote_data/surf_.json";
+                return;
+            }
+
+            remoteSurfDataSource = $"{args}";
+        }
     }
 }

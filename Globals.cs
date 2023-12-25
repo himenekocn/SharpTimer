@@ -63,10 +63,15 @@ namespace SharpTimer
         public string cpSound = "sounds/ui/counter_beep.vsnd";
         public string cpSoundAir = "sounds/ui/weapon_cant_buy.vsnd";
         public string tpSound = "sounds/ui/buttonclick.vsnd";
+        public string? gameDir;
         public string? mySQLpath;
         public string? playerRecordsPath;
         public string? currentMapName;
         public string? defaultServerHostname = ConVar.Find("hostname").StringValue;
+
+        public string? remoteBhopDataSource;
+        public string? remoteKZDataSource;
+        public string? remoteSurfDataSource;
 
         private readonly WIN_LINUX<int> OnCollisionRulesChangedOffset = new WIN_LINUX<int>(174, 173);
     }
