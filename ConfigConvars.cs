@@ -202,7 +202,7 @@ namespace SharpTimer
             srEnabled = bool.TryParse(args, out bool srEnabledValue) ? srEnabledValue : args != "0" && srEnabled;
         }
 
-        [ConsoleCommand("sharptimer_alt_velo_enabled", "Whether the alternative speedometer is enabled by default or not. Default value: false")]
+        [ConsoleCommand("sharptimer_velo_bar_enabled", "Whether the alternative speedometer is enabled by default or not. Default value: false")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
         public void SharpTimerAltVeloConvar(CCSPlayerController? player, CommandInfo command)
         {
@@ -211,7 +211,7 @@ namespace SharpTimer
             alternativeSpeedometer = bool.TryParse(args, out bool alternativeSpeedometerValue) ? alternativeSpeedometerValue : args != "0" && alternativeSpeedometer;
         }
 
-        [ConsoleCommand("sharptimer_alt_velo_max_speed", "The alternative speedometer max speed. Default value: 3000")]
+        [ConsoleCommand("sharptimer_velo_bar_max_speed", "The alternative speedometer max speed. Default value: 3000")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
         public void SharpTimerAltVeloMaxSpeedConvar(CCSPlayerController? player, CommandInfo command)
         {
