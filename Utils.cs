@@ -87,25 +87,21 @@ namespace SharpTimer
                                             $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
                                             $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}";
 
-                    string keysLine = alternativeSpeedometer
+                    /* string keysLine = alternativeSpeedometer
                                       ? keysLineNoHtml
-                                      : $"<font color='{tertiaryHUDcolor}'>{keysLineNoHtml}</font>";
+                                      : $"<font color='{tertiaryHUDcolor}'>{keysLineNoHtml}</font>"; */
 
                     string hudContent = $"{timerLine}" +
                                         $"{veloLine}" +
                                         (alternativeSpeedometer ? $"{veloLineAlt}" : "") +
-                                        $"{infoLine}" +
-                                        (alternativeSpeedometer ? "" : $"{keysLine}");
+                                        $"{infoLine}";
 
                     if (playerTimers[player.Slot].HideTimerHud != true)
                     {
                         player.PrintToCenterHtml(hudContent);
                     }
 
-                    if (alternativeSpeedometer == true)
-                    {
-                        player.PrintToCenter(keysLine);
-                    }
+                    player.PrintToCenter(keysLineNoHtml);
 
                     if (playerTimers[player.Slot].IsTimerRunning)
                     {
@@ -781,20 +777,28 @@ namespace SharpTimer
 
                     if (jsonDocument.RootElement.TryGetProperty(currentMapName, out var mapInfo))
                     {
-                        if (mapInfo.TryGetProperty("Tier", out var tierElement) && mapInfo.TryGetProperty("Type", out var typeElement))
-                        {
-                            int tier = tierElement.GetInt32();
-                            string type = typeElement.GetString();
-                            return (tier, type);
-                        }
-                    }
+                        int? tier = null;
+                        string? type = null;
 
-                    return (null, null);
+                        if (mapInfo.TryGetProperty("Tier", out var tierElement))
+                        {
+                            tier = tierElement.GetInt32();
+                        }
+
+                        if (mapInfo.TryGetProperty("Type", out var typeElement))
+                        {
+                            type = typeElement.GetString();
+                        }
+
+                        return (tier, type);
+                    }
                 }
+
+                return (null, null);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in FineMapInfoFromHTTP: {ex.Message}");
+                Console.WriteLine($"Error Getting Remote Data for {currentMapName}: {ex.Message}");
                 return (null, null);
             }
         }
@@ -821,9 +825,9 @@ namespace SharpTimer
         {
             return currentMapName switch
             {
-                var name when name.Contains("kz_") => remoteKZDataSource,
-                var name when name.Contains("bhop_") => remoteBhopDataSource,
-                var name when name.Contains("surf_") => remoteSurfDataSource,
+                var name when name.StartsWith("kz_") => remoteKZDataSource,
+                var name when name.StartsWith("bhop_") => remoteBhopDataSource,
+                var name when name.StartsWith("surf_") => remoteSurfDataSource,
                 _ => null
             };
         }
