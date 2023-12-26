@@ -838,7 +838,6 @@ namespace SharpTimer
                 Server.ExecuteCommand("sv_autoexec_mapname_cfg 0");
                 Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
                 if (removeCrouchFatigueEnabled == true) Server.ExecuteCommand("sv_timebetweenducks 0");
-                Task.Run(AddMapInfoToHostname);
                 LoadConfig();
             });
         }

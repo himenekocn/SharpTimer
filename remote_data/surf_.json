@@ -1,4 +1,40 @@
 {
+    "surf_evo": {
+        "Tier": 1,
+        "Type": "Staged"
+    },
+    "surf_galaxy_easy": {
+        "Tier": 1,
+        "Type": "Staged"
+    },
+    "surf_beeps": {
+        "Tier": 1,
+        "Type": "Staged"
+    },
+    "surf_mads": {
+        "Tier": 2,
+        "Type": "Staged"
+    },
+    "surf_rgb": {
+        "Tier": 3,
+        "Type": "Linear"
+    },
+    "surf_longreach": {
+        "Tier": 2,
+        "Type": "Linear"
+    },
+    "surf_hyzer": {
+        "Tier": 4,
+        "Type": "Staged"
+    },
+    "surf_momentum": {
+        "Tier": 3,
+        "Type": "Staged"
+    },
+    "surf_trazhtec": {
+        "Tier": 2,
+        "Type": "Linear"
+    },
     "surf_ace": {
         "Tier": 1,
         "Type": "Staged-Linear"
