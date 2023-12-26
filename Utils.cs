@@ -72,8 +72,7 @@ namespace SharpTimer
                     string veloLineAlt = $"{GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()))}";
                     string infoLine = $"<font class='fontSize-s' color='gray'>{playerTimers[player.Slot].TimerRank} | PB: {playerTimers[player.Slot].PB}" +
                                       $"{(currentMapTier != null ? $" | Tier: {currentMapTier}" : "")}" +
-                                      $"{(currentMapType != null ? $" | {currentMapType}" : "")}</font>" +
-                                      (alternativeSpeedometer ? "" : "<br>");
+                                      $"{(currentMapType != null ? $" | {currentMapType}" : "")}</font>";
 
                     string forwardKey = playerTimers[player.Slot].Azerty ? "Z" : "W";
                     string leftKey = playerTimers[player.Slot].Azerty ? "Q" : "A";
