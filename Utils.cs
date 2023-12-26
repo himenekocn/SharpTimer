@@ -862,6 +862,8 @@ namespace SharpTimer
             string mapdataFileName = $"SharpTimer/MapData/{currentMapName}.json";
             string mapdataPath = Path.Join(gameDir + "/csgo/cfg", mapdataFileName);
 
+            Task.Run(AddMapInfoToHostname);
+
             if (File.Exists(mapdataPath))
             {
                 string json = File.ReadAllText(mapdataPath);
