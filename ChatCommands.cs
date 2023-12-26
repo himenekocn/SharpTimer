@@ -356,7 +356,7 @@ namespace SharpTimer
                 Server.NextFrame(() =>
                 {
                     if (!IsAllowedPlayer(player)) return;
-                    Server.NextFrame(() => playerTimers[playerSlot].PB = FormatTime(pbTicks));
+                    playerTimers[playerSlot].PB = FormatTime(pbTicks);
                 });
             }
             else
@@ -461,6 +461,24 @@ namespace SharpTimer
             playerTimers[player.Slot].TimerTicks = 0;
             playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
             if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {respawnSound}");
+        }
+
+        [ConsoleCommand("css_fov", "Teleports you to start")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void FovPlayer(CCSPlayerController? player, CommandInfo command)
+        {
+            if (!IsAllowedPlayer(player)) return;
+
+            if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
+            {
+                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                return;
+            }
+
+            playerTimers[player.Slot].TicksSinceLastCmd = 0;
+
+            player.Pawn.Value.FieldOfView = 120.0f;
+            player.PlayerPawn.Value.FieldOfView = 120.0f;
         }
 
         [ConsoleCommand("css_stop", "Stops your timer")]

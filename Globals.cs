@@ -69,9 +69,9 @@ namespace SharpTimer
         public string? currentMapName;
         public string? defaultServerHostname = ConVar.Find("hostname").StringValue;
 
-        public string? remoteBhopDataSource;
-        public string? remoteKZDataSource;
-        public string? remoteSurfDataSource;
+        public string? remoteBhopDataSource = "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/bhop_.json";
+        public string? remoteKZDataSource = "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/kz_.json";
+        public string? remoteSurfDataSource = "https://raw.githubusercontent.com/DEAFPS/SharpTimer/0.1.3-dev/remote_data/surf_.json";
 
         private readonly WIN_LINUX<int> OnCollisionRulesChangedOffset = new WIN_LINUX<int>(174, 173);
     }
