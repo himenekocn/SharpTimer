@@ -1,6 +1,5 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Cvars;
-using CounterStrikeSharp.API.Modules.Utils;
 using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 namespace SharpTimer
@@ -54,6 +53,7 @@ namespace SharpTimer
         public bool isADTimerRunning = false;
         public bool isRankHUDTimerRunning = false;
         public bool removeCrouchFatigueEnabled = true;
+        public bool goToEnabled = false;
         public int cmdCooldown = 64;
         public float fakeTriggerHeight = 50;
         public int altVeloMaxSpeed = 3000;

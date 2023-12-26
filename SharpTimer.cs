@@ -46,21 +46,7 @@ namespace SharpTimer
 
                     if (cmdJoinMsgEnabled == true)
                     {
-                        player.PrintToChat($"{msgPrefix}Welcome {ChatColors.Red}{player.PlayerName} {ChatColors.White}to the server!");
-                        player.PrintToChat($"{msgPrefix}Available Commands:");
-
-                        if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
-                        if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
-                        if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - Shows your current rank");
-                        if (pbComEnabled) player.PrintToChat($"{msgPrefix}!pb (css_pb) - Shows your current PB");
-
-                        if (cpEnabled)
-                        {
-                            player.PrintToChat($"{msgPrefix}!cp (css_cp) - Sets a Checkpoint");
-                            player.PrintToChat($"{msgPrefix}!tp (css_tp) - Teleports you to the last Checkpoint");
-                            player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - Teleports you one Checkpoint back");
-                            player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you one Checkpoint forward");
-                        }
+                        PrintAllEnabledCommands(player);
                     }
                     
                     playerTimers[player.Slot].MovementService = new CCSPlayer_MovementServices(player.PlayerPawn.Value.MovementServices!.Handle);
@@ -144,14 +130,14 @@ namespace SharpTimer
 
             HookEntityOutput("trigger_multiple", "OnStartTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        if (activator == null || caller == null) return HookResult.Continue;
+                        if (activator == null || output == null || value == null || caller == null) return HookResult.Continue;
                         if (activator.DesignerName != "player" || useTriggers == false) return HookResult.Continue;
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
                         if (!IsAllowedPlayer(player) || caller.Entity.Name == null) return HookResult.Continue;
 
-                        if (IsValidEndTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player) && playerTimers[player.Slot].IsTimerRunning)
+                        if (IsValidEndTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player) && playerTimers[player.Slot].IsTimerRunning && !playerTimers[player.Slot].IsTimerBlocked)
                         {
                             OnTimerStop(player);
                             return HookResult.Continue;
@@ -162,7 +148,7 @@ namespace SharpTimer
                             playerTimers[player.Slot].IsTimerRunning = false;
                             playerTimers[player.Slot].TimerTicks = 0;
                             playerCheckpoints.Remove(player.Slot);
-                            if (maxStartingSpeedEnabled == true && (float)Math.Sqrt(player.PlayerPawn.Value.AbsVelocity.X * player.PlayerPawn.Value.AbsVelocity.X + player.PlayerPawn.Value.AbsVelocity.Y * player.PlayerPawn.Value.AbsVelocity.Y + player.PlayerPawn.Value.AbsVelocity.Z * player.PlayerPawn.Value.AbsVelocity.Z) > maxStartingSpeed)
+                            if (maxStartingSpeedEnabled == true && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed)
                             {
                                 AdjustPlayerVelocity(player, maxStartingSpeed);
                             }
@@ -174,17 +160,17 @@ namespace SharpTimer
 
             HookEntityOutput("trigger_multiple", "OnEndTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        if (activator == null || caller == null) return HookResult.Continue;
+                        if (activator == null || output == null || value == null || caller == null) return HookResult.Continue;
                         if (activator.DesignerName != "player" || useTriggers == false) return HookResult.Continue;
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);
 
                         if (!IsAllowedPlayer(player) || caller.Entity.Name == null) return HookResult.Continue;
 
-                        if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player))
+                        if (IsValidStartTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player) && !playerTimers[player.Slot].IsTimerBlocked)
                         {
                             OnTimerStart(player);
-                            if (maxStartingSpeedEnabled == true && (float)Math.Sqrt(player.PlayerPawn.Value.AbsVelocity.X * player.PlayerPawn.Value.AbsVelocity.X + player.PlayerPawn.Value.AbsVelocity.Y * player.PlayerPawn.Value.AbsVelocity.Y + player.PlayerPawn.Value.AbsVelocity.Z * player.PlayerPawn.Value.AbsVelocity.Z) > maxStartingSpeed)
+                            if (maxStartingSpeedEnabled == true && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed)
                             {
                                 AdjustPlayerVelocity(player, maxStartingSpeed);
                             }
@@ -196,7 +182,7 @@ namespace SharpTimer
 
             HookEntityOutput("trigger_teleport", "OnEndTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
                     {
-                        if (activator == null || caller == null) return HookResult.Continue;
+                        if (activator == null || output == null || value == null || caller == null) return HookResult.Continue;
                         if (activator.DesignerName != "player" || resetTriggerTeleportSpeedEnabled == false) return HookResult.Continue;
 
                         var player = new CCSPlayerController(new CCSPlayerPawn(activator.Handle).Controller.Value.Handle);

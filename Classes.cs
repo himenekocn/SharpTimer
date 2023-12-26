@@ -34,6 +34,7 @@ namespace SharpTimer
     public class PlayerTimerInfo
     {
         public bool IsTimerRunning { get; set; }
+        public bool IsTimerBlocked { get; set; }
         public int TimerTicks { get; set; }
         public string? TimerRank { get; set; }
         public string? PB { get; set; }

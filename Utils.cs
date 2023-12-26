@@ -50,6 +50,24 @@ namespace SharpTimer
             isADTimerRunning = true;
         }
 
+        public void PrintAllEnabledCommands(CCSPlayerController player)
+        {
+            player.PrintToChat($"{msgPrefix}Available Commands:");
+
+            if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
+            if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
+            if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - Shows your current rank and pb");
+            if (goToEnabled) player.PrintToChat($"{msgPrefix}!goto <name> (css_goto) - Teleports you to a player");
+
+            if (cpEnabled)
+            {
+                player.PrintToChat($"{msgPrefix}!cp (css_cp) - Sets a Checkpoint");
+                player.PrintToChat($"{msgPrefix}!tp (css_tp) - Teleports you to the last Checkpoint");
+                player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - Teleports you one Checkpoint back");
+                player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you one Checkpoint forward");
+            }
+        }
+
         public void TimerOnTick(CCSPlayerController player)
         {
             try

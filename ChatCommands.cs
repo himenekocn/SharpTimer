@@ -352,7 +352,7 @@ namespace SharpTimer
 
             playerTimers[playerSlot].TimerRank = ranking;
             if (pbTicks != 0)
-            {              
+            {
                 Server.NextFrame(() =>
                 {
                     if (!IsAllowedPlayer(player)) return;
@@ -416,7 +416,7 @@ namespace SharpTimer
             {
                 Server.NextFrame(() => player.PrintToChat($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
             }
-            
+
             foreach (var kvp in sortedRecords.Take(1))
             {
                 string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
@@ -480,6 +480,8 @@ namespace SharpTimer
             // Remove checkpoints for the current player
             playerCheckpoints.Remove(player.Slot);
 
+            playerTimers[player.Slot].IsTimerBlocked = playerTimers[player.Slot].IsTimerBlocked ? false : true;
+            player.PrintToChat($"Stop timer set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].IsTimerBlocked}");
             playerTimers[player.Slot].IsTimerRunning = false;
             playerTimers[player.Slot].TimerTicks = 0;
             playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
@@ -507,11 +509,11 @@ namespace SharpTimer
             player.PrintToChat($"This server is running SharpTimer v{ModuleVersion}");
         }
 
-        /* [ConsoleCommand("css_tpto", "Teleports you to a player")]
+        [ConsoleCommand("css_goto", "Teleports you to a player")]
         [CommandHelper(minArgs: 1, usage: "[name]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
-        public void TpToPlayer(CCSPlayerController? player, CommandInfo command)
+        public void GoToPlayer(CCSPlayerController? player, CommandInfo command)
         {
-            if (!IsAllowedPlayer(player)) return;
+            if (!IsAllowedPlayer(player) || goToEnabled == false) return;
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -519,43 +521,59 @@ namespace SharpTimer
                 return;
             }
 
+            if (!playerTimers[player.Slot].IsTimerBlocked)
+            {
+                player.PrintToChat(msgPrefix + $" Please stop your timer using {ParseColorToSymbol(primaryHUDcolor)}!stop{ChatColors.White} first!");
+                return;
+            }
+
             playerTimers[player.Slot].TicksSinceLastCmd = 0;
 
             var name = command.GetArg(1);
+            bool isPlayerFound = false;
             CCSPlayerController foundPlayer = null;
 
-            foreach (var playerEntry in connectedPlayers)
+
+            foreach (var playerEntry in connectedPlayers.Values)
             {
-                if (player.PlayerName == name)
+                if (playerEntry.PlayerName == name)
                 {
-                    foundPlayer = player;
+                    foundPlayer = playerEntry;
+                    isPlayerFound = true;
                     break;
                 }
             }
 
-            // Remove checkpoints for the current player
-            playerCheckpoints.Remove(player.Slot);
+            if (!isPlayerFound)
+            {
+                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} Player name not found! If the name contains spaces please try {ParseColorToSymbol(primaryHUDcolor)}!goto 'some name'");
+                return;
+            }
 
+
+            playerCheckpoints.Remove(player.Slot);
             playerTimers[player.Slot].IsTimerRunning = false;
             playerTimers[player.Slot].TimerTicks = 0;
             playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
-            if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {respawnSound}");
 
-            if (foundPlayer != null)
+            if (playerTimers[player.Slot].SoundsEnabled != false)
+                player.ExecuteClientCommand($"play {respawnSound}");
+
+            if (foundPlayer != null && playerTimers[player.Slot].IsTimerBlocked)
             {
-                player.PrintToCenter($"Teleporting to {foundPlayer.PlayerName}");
+                player.PrintToChat(msgPrefix + $"Teleporting to {ParseColorToSymbol(primaryHUDcolor)}{foundPlayer.PlayerName}");
 
-                //var timer = AddTimer(1.0f, () =>
-                //{
-                    if(player != null && foundPlayer != null) player.PlayerPawn.Value.Teleport(foundPlayer.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0), foundPlayer.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
-                //});
+                if (player != null && IsAllowedPlayer(foundPlayer) && playerTimers[player.Slot].IsTimerBlocked)
+                {
+                    player.PlayerPawn.Value.Teleport(foundPlayer.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0),
+                        foundPlayer.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                }
             }
             else
             {
-                player.PrintToCenter($"Player name not found!");
+                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} Player name not found! If the name contains spaces please try {ParseColorToSymbol(primaryHUDcolor)}!goto 'some name'");
             }
-
-        } */
+        }
 
         [ConsoleCommand("css_cp", "Sets a checkpoint")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
