@@ -244,6 +244,28 @@ namespace SharpTimer
 
         }
 
+        [ConsoleCommand("css_keys", "Draws/Hides HUD Keys")]
+        [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+        public void KeysSwitchCommand(CCSPlayerController? player, CommandInfo command)
+        {
+            if (!IsAllowedPlayer(player)) return;
+
+            if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
+            {
+                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                return;
+            }
+
+            playerTimers[player.Slot].TicksSinceLastCmd = 0;
+
+            playerTimers[player.Slot].HideKeys = playerTimers[player.Slot].HideKeys ? false : true;
+
+            player.PrintToChat($"Hide Timer HUD set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].HideKeys}");
+
+            //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "Azerty", playerTimers[player.Slot].HideKeys);
+
+        }
+
         [ConsoleCommand("css_sounds", "Toggles Sounds")]
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void SoundsSwitchCommand(CCSPlayerController? player, CommandInfo command)

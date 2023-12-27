@@ -43,6 +43,7 @@ namespace SharpTimer
         public int CheckpointIndex { get; set; }
         public bool Azerty { get; set; }
         public bool HideTimerHud { get; set; }
+        public bool HideKeys { get; set; }
         public bool SoundsEnabled { get; set; }
         public int TimesConnected { get; set; }
         public int TicksSinceLastCmd { get; set; }

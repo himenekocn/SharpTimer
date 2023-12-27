@@ -132,7 +132,10 @@ namespace SharpTimer
                 player.PrintToCenterHtml(hudContent);
             }
 
-            player.PrintToCenter(keysLineNoHtml);
+            if (playerTimers[player.Slot].HideKeys != true)
+            {
+                player.PrintToCenter(keysLineNoHtml);
+            }           
 
             if (playerTimers[player.Slot].IsTimerRunning)
             {
