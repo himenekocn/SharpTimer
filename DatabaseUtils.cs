@@ -249,11 +249,11 @@ namespace SharpTimer
 
                             // Check if the player is already in the database for the map
                             string insertOrUpdateQuery = @"
-                        INSERT INTO PlayerRecords (MapName, SteamID, PlayerName, TimerTicks, FormattedTime)
-                        VALUES (@MapName, @SteamID, @PlayerName, @TimerTicks, @FormattedTime)
-                        ON DUPLICATE KEY UPDATE
-                        TimerTicks = IF(@TimerTicks < TimerTicks, @TimerTicks, TimerTicks),
-                        FormattedTime = IF(@TimerTicks < TimerTicks, @FormattedTime, FormattedTime)";
+                                INSERT INTO PlayerRecords (MapName, SteamID, PlayerName, TimerTicks, FormattedTime)
+                                VALUES (@MapName, @SteamID, @PlayerName, @TimerTicks, @FormattedTime)
+                                ON DUPLICATE KEY UPDATE
+                                TimerTicks = IF(@TimerTicks < TimerTicks, @TimerTicks, TimerTicks),
+                                FormattedTime = IF(@TimerTicks < TimerTicks, @FormattedTime, FormattedTime)";
 
                             using (var insertOrUpdateCommand = new MySqlCommand(insertOrUpdateQuery, connection))
                             {

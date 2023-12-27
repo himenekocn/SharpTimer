@@ -13,13 +13,18 @@ namespace SharpTimer
     {
         public override void Load(bool hotReload)
         {
+            SharpTimerDebug("Loading Plugin...");
+
             gameDir = Server.GameDirectory;
+            SharpTimerDebug($"Set gameDir to {gameDir}");
 
             string recordsFileName = "SharpTimer/player_records.json";
             playerRecordsPath = Path.Join(gameDir + "/csgo/cfg", recordsFileName);
+            SharpTimerDebug($"Set playerRecordsPath to {playerRecordsPath}");
 
             string mysqlConfigFileName = "SharpTimer/mysqlConfig.json";
             mySQLpath = Path.Join(gameDir + "/csgo/cfg", mysqlConfigFileName);
+            SharpTimerDebug($"Set playerRecordsPath to {playerRecordsPath}");
 
             currentMapName = Server.MapName;
 
@@ -69,7 +74,8 @@ namespace SharpTimer
 
             RegisterEventHandler<EventRoundStart>((@event, info) =>
             {
-                LoadConfig();
+                LoadMapData();
+                SharpTimerDebug($"Loading MapData on RoundStart...");
                 return HookResult.Continue;
             });
 
@@ -152,6 +158,7 @@ namespace SharpTimer
                     if (IsValidEndTriggerName(caller.Entity.Name.ToString()) && IsAllowedPlayer(player) && playerTimers[player.Slot].IsTimerRunning && !playerTimers[player.Slot].IsTimerBlocked)
                     {
                         OnTimerStop(player);
+                        SharpTimerDebug($"Player {player.PlayerName} entered EndZone");
                         return HookResult.Continue;
                     }
 
@@ -165,6 +172,8 @@ namespace SharpTimer
                         {
                             AdjustPlayerVelocity(player, maxStartingSpeed);
                         }
+
+                        SharpTimerDebug($"Player {player.PlayerName} entered StartZone");
 
                         return HookResult.Continue;
                     }
@@ -207,6 +216,8 @@ namespace SharpTimer
                         {
                             AdjustPlayerVelocity(player, maxStartingSpeed);
                         }
+
+                        SharpTimerDebug($"Player {player.PlayerName} left StartZone");
 
                         return HookResult.Continue;
                     }
@@ -270,13 +281,19 @@ namespace SharpTimer
                     return HookResult.Continue;
                 }), HookMode.Pre);
             }
+            else
+            {
+                SharpTimerDebug($"Platform is Windows. Blocking TakeDamage hook");
+            }
 
-            SharpTimerDebug("[SharpTimer] Plugin Loaded");
+            SharpTimerDebug("Plugin Loaded");
         }
 
         public void OnTimerStart(CCSPlayerController? player)
         {
             if (!IsAllowedPlayer(player)) return;
+
+            SharpTimerDebug($"Starting Timer for {player.PlayerName}");
 
             // Remove checkpoints for the current player
             playerCheckpoints.Remove(player.Slot);
@@ -288,6 +305,8 @@ namespace SharpTimer
         public void OnTimerStop(CCSPlayerController? player)
         {
             if (!IsAllowedPlayer(player) || playerTimers[player.Slot].IsTimerRunning == false) return;
+
+            SharpTimerDebug($"Stopping Timer for {player.PlayerName}");
 
             int currentTicks = playerTimers[player.Slot].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);

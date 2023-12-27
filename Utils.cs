@@ -22,6 +22,7 @@ namespace SharpTimer
 
             var timer = AddTimer(srTimer, async () =>
             {
+                SharpTimerDebug($"Running Server Record AD...");
                 Dictionary<string, PlayerRecord> sortedRecords;
                 if (useMySQL == false)
                 {
@@ -63,6 +64,7 @@ namespace SharpTimer
 
         public void PrintAllEnabledCommands(CCSPlayerController player)
         {
+            SharpTimerDebug($"Printing Commands for {player.PlayerName}");
             player.PrintToChat($"{msgPrefix}Available Commands:");
 
             if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
@@ -135,7 +137,7 @@ namespace SharpTimer
             if (playerTimers[player.Slot].HideKeys != true)
             {
                 player.PrintToCenter(keysLineNoHtml);
-            }           
+            }
 
             if (playerTimers[player.Slot].IsTimerRunning)
             {
@@ -578,6 +580,7 @@ namespace SharpTimer
             var adjustedY = normalizedY * velocity; // Adjusted speed limit
             player.PlayerPawn.Value.AbsVelocity.X = (float)adjustedX;
             player.PlayerPawn.Value.AbsVelocity.Y = (float)adjustedY;
+            SharpTimerDebug($"Adjusted Velo for {player.PlayerName} to {player.PlayerPawn.Value.AbsVelocity}");
         }
 
         private void RemovePlayerCollision(CCSPlayerController? player)
@@ -588,6 +591,7 @@ namespace SharpTimer
             player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup = (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING;
             VirtualFunctionVoid<nint> collisionRulesChanged = new VirtualFunctionVoid<nint>(player.PlayerPawn.Value.Handle, OnCollisionRulesChangedOffset.Get());
             collisionRulesChanged.Invoke(player.PlayerPawn.Value.Handle);
+            SharpTimerDebug($"Removed Collison for {player.PlayerName}");
         }
 
         private Vector? FindStartTriggerPos()
@@ -815,6 +819,7 @@ namespace SharpTimer
         {
             if (!IsAllowedPlayer(player)) return;
             if (playerTimers[player.Slot].IsTimerRunning == false) return;
+            SharpTimerDebug($"Saving player time of {timerTicks} ticks for {player.PlayerName} to json");
 
             string currentMapName = Server.MapName;
             string steamId = player.SteamID.ToString();
@@ -853,6 +858,7 @@ namespace SharpTimer
         {
             try
             {
+                SharpTimerDebug($"Trying to fetch remote_data for {currentMapName} from {url}");
                 using (HttpClient client = new HttpClient())
                 {
                     var response = await client.GetStringAsync(url);
@@ -873,6 +879,8 @@ namespace SharpTimer
                             type = typeElement.GetString();
                         }
 
+                        SharpTimerDebug($"Fetched remote_data success! {tier} {type}");
+
                         return (tier, type);
                     }
                 }
@@ -888,8 +896,6 @@ namespace SharpTimer
 
         private async Task AddMapInfoToHostname()
         {
-            if (!autosetHostname) return;
-
             string mapInfoSource = GetMapInfoSource();
             var (mapTier, mapType) = await FineMapInfoFromHTTP(mapInfoSource);
             currentMapTier = mapTier;
@@ -897,10 +903,12 @@ namespace SharpTimer
             string tierString = currentMapTier != null ? $" | Tier: {currentMapTier}" : "";
             string typeString = currentMapType != null ? $" | {currentMapType}" : "";
 
+            if (!autosetHostname) return;
+
             Server.NextFrame(() =>
             {
-                Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString} | {Server.MapName}");
-                SharpTimerConPrint($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+                Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString}");
+                SharpTimerDebug($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
             });
         }
 
@@ -919,18 +927,26 @@ namespace SharpTimer
         {
             Server.NextFrame(() =>
             {
+                SharpTimerDebug("OnMapStart:");
+                SharpTimerDebug("Executing SharpTimer/config");
                 Server.ExecuteCommand("sv_autoexec_mapname_cfg 0");
-                Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
+                Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
+
+                //delay custom_exec so it executes after map exec
+                SharpTimerDebug("Creating cutom_exec 2sec delay");
+                var custom_exec_delay = AddTimer(2.0f, () =>
+                {
+                    SharpTimerDebug("Executing SharpTimer/custom_exec");
+                    Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
+                });
+
                 if (removeCrouchFatigueEnabled == true) Server.ExecuteCommand("sv_timebetweenducks 0");
-                LoadConfig();
             });
         }
 
-        private void LoadConfig()
+        private void LoadMapData()
         {
             Server.ExecuteCommand($"hostname {defaultServerHostname}");
-            Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
-            Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
 
             if (srEnabled == true) ServerRecordADtimer();
 
