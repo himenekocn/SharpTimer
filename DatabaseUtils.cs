@@ -13,7 +13,7 @@ namespace SharpTimer
 {
     partial class SharpTimer
     {
-        private static string GetConnectionStringFromConfigFile(string mySQLpath)
+        private string GetConnectionStringFromConfigFile(string mySQLpath)
         {
             try
             {
@@ -32,7 +32,7 @@ namespace SharpTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error reading MySQL config file: {ex.Message}");
+                SharpTimerDebug($"Error reading MySQL config file: {ex.Message}");
                 return "Server=localhost;Database=database;User ID=root;Password=root;Port=3306;CharSet=utf8mb4;";
             }
         }
@@ -86,7 +86,7 @@ namespace SharpTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving player time to MySQL: {ex.Message}");
+                SharpTimerDebug($"Error saving player time to MySQL: {ex.Message}");
             }
         }
 
@@ -129,7 +129,7 @@ namespace SharpTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting previous player record from MySQL: {ex.Message}");
+                SharpTimerDebug($"Error getting previous player record from MySQL: {ex.Message}");
             }
 
             return 0;
@@ -181,7 +181,7 @@ namespace SharpTimer
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error getting sorted records from MySQL: {ex.Message}");
+                SharpTimerDebug($"Error getting sorted records from MySQL: {ex.Message}");
             }
 
             return new Dictionary<string, PlayerRecord>();
@@ -212,7 +212,7 @@ namespace SharpTimer
             {
                 if (!File.Exists(playerRecordsPath))
                 {
-                    Console.WriteLine($"Error: JSON file not found at {playerRecordsPath}");
+                    SharpTimerDebug($"Error: JSON file not found at {playerRecordsPath}");
                     return;
                 }
 
@@ -221,7 +221,7 @@ namespace SharpTimer
 
                 if (records == null)
                 {
-                    Console.WriteLine("Error: Failed to deserialize JSON data.");
+                    SharpTimerDebug("Error: Failed to deserialize JSON data.");
                     return;
                 }
 
@@ -268,12 +268,12 @@ namespace SharpTimer
                         }
                     }
 
-                    Console.WriteLine("JSON times successfully added to the database.");
+                    SharpTimerDebug("JSON times successfully added to the database.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding JSON times to the database: {ex.Message}");
+                SharpTimerDebug($"Error adding JSON times to the database: {ex.Message}");
             }
         }
 
@@ -330,14 +330,14 @@ namespace SharpTimer
                             // Save JSON to file
                             await File.WriteAllTextAsync(playerRecordsPath, json);
 
-                            Console.WriteLine("Player records successfully exported to JSON.");
+                            SharpTimerDebug("Player records successfully exported to JSON.");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error exporting player records to JSON: {ex.Message}");
+                SharpTimerDebug($"Error exporting player records to JSON: {ex.Message}");
             }
         }
     }

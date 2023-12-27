@@ -28,6 +28,7 @@ namespace SharpTimer
         public string? currentMapType = null;
         public int? currentMapTier = null;
 
+        public bool enableDebug = false;
         public bool useMySQL = false;
 
         public bool useTriggers = true;

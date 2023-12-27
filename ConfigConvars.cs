@@ -32,6 +32,15 @@ namespace SharpTimer
 
             autosetHostname = bool.TryParse(args, out bool autosetHostnameValue) ? autosetHostnameValue : args != "0" && autosetHostname;
         }
+
+        [ConsoleCommand("sharptimer_debug_enabled", "Default value: false")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerConPrintConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            enableDebug = bool.TryParse(args, out bool enableDebugValue) ? enableDebugValue : args != "0" && enableDebug;
+        }
         
         [ConsoleCommand("sharptimer_mysql_enabled", "Whether player times should be put into a mysql database by default or not. Default value: false")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
@@ -51,11 +60,11 @@ namespace SharpTimer
             if (float.TryParse(args, out float cooldown) && cooldown > 0)
             {
                 cmdCooldown = (int)(cooldown * 64);
-                Console.WriteLine($"SharpTimer command cooldown set to {cooldown} seconds.");
+                SharpTimerConPrint($"SharpTimer command cooldown set to {cooldown} seconds.");
             }
             else
             {
-                Console.WriteLine("Invalid command cooldown value. Please provide a positive integer.");
+                SharpTimerConPrint("Invalid command cooldown value. Please provide a positive integer.");
             }
         }
 
@@ -167,11 +176,11 @@ namespace SharpTimer
             if (int.TryParse(args, out int speed) && speed > 0)
             {
                 maxStartingSpeed = speed;
-                Console.WriteLine($"SharpTimer max trigger speed set to {speed}.");
+                SharpTimerConPrint($"SharpTimer max trigger speed set to {speed}.");
             }
             else
             {
-                Console.WriteLine("Invalid max trigger speed value. Please provide a positive integer.");
+                SharpTimerConPrint("Invalid max trigger speed value. Please provide a positive integer.");
             }
         }
 
@@ -229,11 +238,11 @@ namespace SharpTimer
             if (int.TryParse(args, out int interval) && interval > 0)
             {
                 altVeloMaxSpeed = interval;
-                Console.WriteLine($"SharpTimer Alternative Velo Max Speed set to {interval} units/s.");
+                SharpTimerConPrint($"SharpTimer Alternative Velo Max Speed set to {interval} units/s.");
             }
             else
             {
-                Console.WriteLine("Invalid Alternative Velo Max Speed. Please provide a positive integer.");
+                SharpTimerConPrint("Invalid Alternative Velo Max Speed. Please provide a positive integer.");
             }
         }
 
@@ -246,11 +255,11 @@ namespace SharpTimer
             if (int.TryParse(args, out int interval) && interval > 0)
             {
                 srTimer = interval;
-                Console.WriteLine($"SharpTimer sr ad interval set to {interval} seconds.");
+                SharpTimerConPrint($"SharpTimer sr ad interval set to {interval} seconds.");
             }
             else
             {
-                Console.WriteLine("Invalid sr ad interval value. Please provide a positive integer.");
+                SharpTimerConPrint("Invalid sr ad interval value. Please provide a positive integer.");
             }
         }
 
@@ -327,11 +336,11 @@ namespace SharpTimer
             if (float.TryParse(args, out float height) && height > 0)
             {
                 fakeTriggerHeight = height;
-                Console.WriteLine($"SharpTimer fake trigger height set to {height} units.");
+                SharpTimerConPrint($"SharpTimer fake trigger height set to {height} units.");
             }
             else
             {
-                Console.WriteLine("Invalid fake trigger height value. Please provide a positive integer.");
+                SharpTimerConPrint("Invalid fake trigger height value. Please provide a positive integer.");
             }
         }
 

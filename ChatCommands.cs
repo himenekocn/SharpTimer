@@ -303,8 +303,11 @@ namespace SharpTimer
                 return;
             }
 
+            Server.NextFrame(() =>
+            {
+                if (IsAllowedPlayer(player)) player.PrintToChat($"{msgPrefix} Top 10 Records for {currentMapName}:");
+            });
 
-            if (IsAllowedPlayer(player)) Server.NextFrame(() => player.PrintToChat(msgPrefix + $" Top 10 Records for {currentMapName}:"));
             int rank = 1;
 
             foreach (var kvp in sortedRecords.Take(10))
@@ -412,20 +415,21 @@ namespace SharpTimer
                 return;
             }
 
-            if (IsAllowedPlayer(player))
+            Server.NextFrame(() =>
             {
-                Server.NextFrame(() => player.PrintToChat($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
-            }
+                if (!IsAllowedPlayer(player)) return;
+                player.PrintToChat($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: ");
+            });
 
             foreach (var kvp in sortedRecords.Take(1))
             {
                 string playerName = kvp.Value.PlayerName; // Get the player name from the dictionary value
                 int timerTicks = kvp.Value.TimerTicks; // Get the timer ticks from the dictionary value
-
-                if (IsAllowedPlayer(player))
+                Server.NextFrame(() =>
                 {
-                    Server.NextFrame(() => player.PrintToChat(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}"));
-                }
+                    if (!IsAllowedPlayer(player)) return;
+                    player.PrintToChat(msgPrefix + $" {ParseColorToSymbol(primaryHUDcolor)}{playerName} {ChatColors.White}- {ParseColorToSymbol(primaryHUDcolor)}{FormatTime(timerTicks)}");
+                });
             }
         }
 
@@ -433,34 +437,40 @@ namespace SharpTimer
         [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
         public void RespawnPlayer(CCSPlayerController? player, CommandInfo command)
         {
-            if (!IsAllowedPlayer(player) || respawnEnabled == false) return;
-
-            if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
+            try
             {
-                player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
-                return;
+                if (!IsAllowedPlayer(player) || respawnEnabled == false) return;
+
+                if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
+                {
+                    player.PrintToChat(msgPrefix + $" Command is on cooldown. Chill...");
+                    return;
+                }
+
+                playerTimers[player.Slot].TicksSinceLastCmd = 0;
+
+                // Remove checkpoints for the current player
+                playerCheckpoints.Remove(player.Slot);
+
+                if (currentRespawnPos != null)
+                {
+                    player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                    SharpTimerDebug($"{player.PlayerName} css_r to {currentRespawnPos}");
+                }
+                else
+                {
+                    player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
+                }
+
+                playerTimers[player.Slot].IsTimerRunning = false;
+                playerTimers[player.Slot].TimerTicks = 0;
+                playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
+                if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {respawnSound}");
             }
-
-            playerTimers[player.Slot].TicksSinceLastCmd = 0;
-
-            // Remove checkpoints for the current player
-            playerCheckpoints.Remove(player.Slot);
-
-
-            if (currentRespawnPos != null)
+            catch (Exception ex)
             {
-                player.PlayerPawn.Value.Teleport(currentRespawnPos, player.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
-                Console.WriteLine($"{player.PlayerName} css_r to {currentRespawnPos}");
+                SharpTimerDebug($"Exception in RespawnPlayer: {ex.Message}");
             }
-            else
-            {
-                player.PrintToChat(msgPrefix + $" {ChatColors.LightRed} No RespawnPos found for current map!");
-            }
-
-            playerTimers[player.Slot].IsTimerRunning = false;
-            playerTimers[player.Slot].TimerTicks = 0;
-            playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
-            if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {respawnSound}");
         }
 
         [ConsoleCommand("css_stop", "Stops your timer")]
@@ -494,7 +504,7 @@ namespace SharpTimer
         {
             if (!IsAllowedPlayer(player))
             {
-                Console.WriteLine($"This server is running SharpTimer v{ModuleVersion}");
+                SharpTimerConPrint($"This server is running SharpTimer v{ModuleVersion}");
                 return;
             }
 
