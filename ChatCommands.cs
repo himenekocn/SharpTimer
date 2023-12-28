@@ -187,16 +187,19 @@ namespace SharpTimer
         public void AdminNoclipCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_noclip...");
 
             playerTimers[player.Slot].IsNoclipEnabled = playerTimers[player.Slot].IsNoclipEnabled ? false : true;
 
             if (playerTimers[player.Slot].IsNoclipEnabled)
             {
                 player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
+                SharpTimerDebug($"MoveType set to MOVETYPE_WALK for");
             }
             else
             {
                 player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_NOCLIP;
+                SharpTimerDebug($"MoveType set to MOVETYPE_NOCLIP for");
             }
         }
 
@@ -205,6 +208,7 @@ namespace SharpTimer
         public void AzertySwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_azerty...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -217,6 +221,7 @@ namespace SharpTimer
             playerTimers[player.Slot].Azerty = playerTimers[player.Slot].Azerty ? false : true;
 
             player.PrintToChat($"Azerty Layout set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].Azerty}");
+            SharpTimerDebug($"Azerty Layout set to: {playerTimers[player.Slot].Azerty} for {player.PlayerName}");
 
             //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "Azerty", playerTimers[player.Slot].Azerty);
 
@@ -227,6 +232,7 @@ namespace SharpTimer
         public void HUDSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_hud...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -239,6 +245,7 @@ namespace SharpTimer
             playerTimers[player.Slot].HideTimerHud = playerTimers[player.Slot].HideTimerHud ? false : true;
 
             player.PrintToChat($"Hide Timer HUD set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].HideTimerHud}");
+            SharpTimerDebug($"Hide Timer HUD set to: {playerTimers[player.Slot].HideTimerHud} for {player.PlayerName}");
 
             //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "Azerty", playerTimers[player.Slot].HideTimerHud);
 
@@ -249,6 +256,7 @@ namespace SharpTimer
         public void KeysSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_keys...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -261,6 +269,7 @@ namespace SharpTimer
             playerTimers[player.Slot].HideKeys = playerTimers[player.Slot].HideKeys ? false : true;
 
             player.PrintToChat($"Hide Timer HUD set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].HideKeys}");
+            SharpTimerDebug($"Hide Timer HUD set to: {playerTimers[player.Slot].HideKeys} for {player.PlayerName}");
 
             //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "Azerty", playerTimers[player.Slot].HideKeys);
 
@@ -271,6 +280,7 @@ namespace SharpTimer
         public void SoundsSwitchCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_sounds...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -282,7 +292,8 @@ namespace SharpTimer
 
             playerTimers[player.Slot].SoundsEnabled = playerTimers[player.Slot].SoundsEnabled ? false : true;
 
-            player.PrintToChat($"Hide Timer HUD set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].SoundsEnabled}");
+            player.PrintToChat($"Timer Sounds set to: {ParseColorToSymbol(primaryHUDcolor)}{playerTimers[player.Slot].SoundsEnabled}");
+            SharpTimerDebug($"Timer Sounds set to: {playerTimers[player.Slot].SoundsEnabled} for {player.PlayerName}");
 
             //if(useMySQL == true) _ = SavePlayerBoolStatToDatabase(player.SteamID.ToString(), "Azerty", playerTimers[player.Slot].SoundsEnabled);
 
@@ -293,6 +304,7 @@ namespace SharpTimer
         public void PrintTopRecords(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || topEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_top...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -308,6 +320,7 @@ namespace SharpTimer
         public async Task PrintTopRecordsHandler(CCSPlayerController? player)
         {
             if (!IsAllowedPlayer(player) || topEnabled == false) return;
+            SharpTimerDebug($"Handling !top for {player.PlayerName}");
             Dictionary<string, PlayerRecord> sortedRecords;
             if (useMySQL == true)
             {
@@ -350,6 +363,7 @@ namespace SharpTimer
         public void RankCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || rankEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_rank...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -357,12 +371,13 @@ namespace SharpTimer
                 return;
             }
 
-            _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot);
+            _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, player.PlayerName);
         }
 
-        public async Task RankCommandHandler(CCSPlayerController? player, string steamId, int playerSlot, bool toHUD = false)
+        public async Task RankCommandHandler(CCSPlayerController? player, string steamId, int playerSlot, string playerName, bool toHUD = false)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"Handling !rank for {player.PlayerName}...");
             string ranking = await GetPlayerPlacementWithTotal(player, steamId, playerSlot);
 
             int pbTicks;
@@ -372,7 +387,7 @@ namespace SharpTimer
             }
             else
             {
-                pbTicks = await GetPreviousPlayerRecordFromDatabase(player, steamId, currentMapName);
+                pbTicks = await GetPreviousPlayerRecordFromDatabase(player, steamId, currentMapName, playerName);
             }
 
             playerTimers[playerSlot].TimerRank = ranking;
@@ -409,6 +424,7 @@ namespace SharpTimer
         public void SRCommand(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || rankEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_sr...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -422,6 +438,7 @@ namespace SharpTimer
         public async Task SRCommandHandler(CCSPlayerController? player)
         {
             if (!IsAllowedPlayer(player) || rankEnabled == false) return;
+            SharpTimerDebug($"Handling !sr for {player.PlayerName}...");
             Dictionary<string, PlayerRecord> sortedRecords;
             if (useMySQL == false)
             {
@@ -462,6 +479,7 @@ namespace SharpTimer
             try
             {
                 if (!IsAllowedPlayer(player) || respawnEnabled == false) return;
+                SharpTimerDebug($"{player.PlayerName} calling css_r...");
 
                 if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
                 {
@@ -500,6 +518,7 @@ namespace SharpTimer
         public void StopTimer(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player)) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_stop...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -517,7 +536,8 @@ namespace SharpTimer
             playerTimers[player.Slot].IsTimerRunning = false;
             playerTimers[player.Slot].TimerTicks = 0;
             playerTimers[player.Slot].SortedCachedRecords = GetSortedRecords();
-            if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {respawnSound}");
+            if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {beepSound}");
+            SharpTimerDebug($"{player.PlayerName} css_stop to {playerTimers[player.Slot].IsTimerBlocked}");
         }
 
         [ConsoleCommand("css_stver", "Prints SharpTimer Version")]
@@ -546,6 +566,7 @@ namespace SharpTimer
         public void GoToPlayer(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || goToEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_goto...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -599,6 +620,7 @@ namespace SharpTimer
                 {
                     player.PlayerPawn.Value.Teleport(foundPlayer.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0),
                         foundPlayer.PlayerPawn.Value.EyeAngles ?? new QAngle(0, 0, 0), new Vector(0, 0, 0));
+                    SharpTimerDebug($"{player.PlayerName} css_goto to {foundPlayer.Pawn.Value.CBodyComponent?.SceneNode?.AbsOrigin ?? new Vector(0, 0, 0)}");
                 }
             }
             else
@@ -612,6 +634,7 @@ namespace SharpTimer
         public void SetPlayerCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || cpEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_cp...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -657,6 +680,7 @@ namespace SharpTimer
             // Print the chat message with the checkpoint count
             player.PrintToChat(msgPrefix + $"Checkpoint set! {ParseColorToSymbol(primaryHUDcolor)}#{checkpointCount}");
             if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {cpSound}");
+            SharpTimerDebug($"{player.PlayerName} css_cp to {checkpointCount} {positionString} {rotationString} {speedString}");
         }
 
         [ConsoleCommand("css_tp", "Tp to the most recent checkpoint")]
@@ -664,6 +688,7 @@ namespace SharpTimer
         public void TpPlayerCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || cpEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_tp...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -701,6 +726,7 @@ namespace SharpTimer
             // Play a sound or provide feedback to the player
             if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {tpSound}");
             player.PrintToChat(msgPrefix + "Teleported to most recent checkpoint!");
+            SharpTimerDebug($"{player.PlayerName} css_tp to {position} {rotation} {speed}");
         }
 
         [ConsoleCommand("css_prevcp", "Tp to the previous checkpoint")]
@@ -708,6 +734,7 @@ namespace SharpTimer
         public void TpPreviousCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || cpEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_prevcp...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -748,6 +775,7 @@ namespace SharpTimer
                 // Play a sound or provide feedback to the player
                 if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {tpSound}");
                 player.PrintToChat(msgPrefix + "Teleported to the previous checkpoint!");
+                SharpTimerDebug($"{player.PlayerName} css_prevcp to {position} {rotation}");
             }
         }
 
@@ -756,6 +784,7 @@ namespace SharpTimer
         public void TpNextCP(CCSPlayerController? player, CommandInfo command)
         {
             if (!IsAllowedPlayer(player) || cpEnabled == false) return;
+            SharpTimerDebug($"{player.PlayerName} calling css_nextcp...");
 
             if (playerTimers[player.Slot].TicksSinceLastCmd < cmdCooldown)
             {
@@ -797,6 +826,7 @@ namespace SharpTimer
                 // Play a sound or provide feedback to the player
                 if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {tpSound}");
                 player.PrintToChat(msgPrefix + "Teleported to the next checkpoint!");
+                SharpTimerDebug($"{player.PlayerName} css_nextcp to {position} {rotation}");
             }
         }
     }

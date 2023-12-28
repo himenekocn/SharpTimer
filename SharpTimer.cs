@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace SharpTimer
 {
-    [MinimumApiVersion(125)]
+    [MinimumApiVersion(141)]
     public partial class SharpTimer : BasePlugin
     {
         public override void Load(bool hotReload)
@@ -24,7 +24,7 @@ namespace SharpTimer
 
             string mysqlConfigFileName = "SharpTimer/mysqlConfig.json";
             mySQLpath = Path.Join(gameDir + "/csgo/cfg", mysqlConfigFileName);
-            SharpTimerDebug($"Set playerRecordsPath to {playerRecordsPath}");
+            SharpTimerDebug($"Set mySQLpath to {mySQLpath}");
 
             currentMapName = Server.MapName;
 
@@ -293,7 +293,7 @@ namespace SharpTimer
         {
             if (!IsAllowedPlayer(player)) return;
 
-            SharpTimerDebug($"Starting Timer for {player.PlayerName}");
+            if(useTriggers) SharpTimerDebug($"Starting Timer for {player.PlayerName}");
 
             // Remove checkpoints for the current player
             playerCheckpoints.Remove(player.Slot);
@@ -306,7 +306,7 @@ namespace SharpTimer
         {
             if (!IsAllowedPlayer(player) || playerTimers[player.Slot].IsTimerRunning == false) return;
 
-            SharpTimerDebug($"Stopping Timer for {player.PlayerName}");
+            if(useTriggers) SharpTimerDebug($"Stopping Timer for {player.PlayerName}");
 
             int currentTicks = playerTimers[player.Slot].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);
@@ -340,7 +340,7 @@ namespace SharpTimer
                 Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}just finished the map in: {ChatColors.Yellow}[{FormatTime(currentTicks)}]! (No change in time)");
             }
 
-            if (useMySQL == false) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
+            if (useMySQL == false) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, player.PlayerName, true);
 
             if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {beepSound}");
         }

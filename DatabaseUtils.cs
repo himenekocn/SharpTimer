@@ -15,6 +15,7 @@ namespace SharpTimer
     {
         private string GetConnectionStringFromConfigFile(string mySQLpath)
         {
+            SharpTimerDebug($"Trying to get a MySQL Connection string from {mySQLpath}");
             try
             {
                 string jsonString = File.ReadAllText(mySQLpath);
@@ -28,6 +29,7 @@ namespace SharpTimer
                 string password = root.GetProperty("MySqlPassword").GetString();
                 int port = root.GetProperty("MySqlPort").GetInt32();
 
+                SharpTimerDebug($"Got Connection String!");
                 return $"Server={host};Database={database};User ID={username};Password={password};Port={port};CharSet=utf8mb4;";
             }
             catch (Exception ex)
@@ -42,6 +44,7 @@ namespace SharpTimer
             if (!IsAllowedPlayer(player)) return;
             if (playerTimers[playerSlot].IsTimerRunning == false) return;
 
+            SharpTimerDebug($"Trying to save player time to MySQL for {playerName} {timerTicks}");
             try
             {
                 using (var connection = new MySqlConnection(GetConnectionStringFromConfigFile(mySQLpath)))
@@ -78,11 +81,12 @@ namespace SharpTimer
                                 upsertCommand.Parameters.AddWithValue("@FormattedTime", formattedTime);
 
                                 await upsertCommand.ExecuteNonQueryAsync();
+                                SharpTimerDebug($"Saved player time to MySQL for {playerName} {timerTicks}");
                             }
                         }
                     }
                 }
-                if (useMySQL == true) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
+                if (useMySQL == true) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, player.PlayerName, true);
             }
             catch (Exception ex)
             {
@@ -90,13 +94,14 @@ namespace SharpTimer
             }
         }
 
-        public async Task<int> GetPreviousPlayerRecordFromDatabase(CCSPlayerController? player, string steamId, string currentMapName)
+        public async Task<int> GetPreviousPlayerRecordFromDatabase(CCSPlayerController? player, string steamId, string currentMapName, string playerName)
         {
             if (!IsAllowedPlayer(player))
             {
                 return 0;
             }
 
+            SharpTimerDebug($"Trying to get Previous Record from MySQL for {playerName}");
             try
             {
                 using (var connection = new MySqlConnection(GetConnectionStringFromConfigFile(mySQLpath)))
@@ -122,6 +127,7 @@ namespace SharpTimer
                         // Check for DBNull
                         if (result != null && result != DBNull.Value)
                         {
+                            SharpTimerDebug($"Got Previous Time from MySQL for {playerName}");
                             return Convert.ToInt32(result);
                         }
                     }
@@ -137,6 +143,7 @@ namespace SharpTimer
 
         public async Task<Dictionary<string, PlayerRecord>> GetSortedRecordsFromDatabase()
         {
+            SharpTimerDebug($"Trying GetSortedRecords from MySQL");
             try
             {
                 using (var connection = new MySqlConnection(GetConnectionStringFromConfigFile(mySQLpath)))
@@ -174,6 +181,7 @@ namespace SharpTimer
                             sortedRecords = sortedRecords.OrderBy(record => record.Value.TimerTicks)
                                                          .ToDictionary(record => record.Key, record => record.Value);
 
+                            SharpTimerDebug($"Got GetSortedRecords from MySQL");
                             return sortedRecords;
                         }
                     }

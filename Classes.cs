@@ -38,6 +38,7 @@ namespace SharpTimer
         public int TimerTicks { get; set; }
         public string? TimerRank { get; set; }
         public string? PB { get; set; }
+        public bool IsRankPbCached { get; set; }
         public string? PreSpeed { get; set; }
         public int? TicksInAir { get; set; }
         public int CheckpointIndex { get; set; }

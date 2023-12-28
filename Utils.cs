@@ -12,6 +12,7 @@ using Vector = CounterStrikeSharp.API.Modules.Utils.Vector;
 
 
 
+
 namespace SharpTimer
 {
     public partial class SharpTimer
@@ -26,15 +27,18 @@ namespace SharpTimer
                 Dictionary<string, PlayerRecord> sortedRecords;
                 if (useMySQL == false)
                 {
+                    SharpTimerDebug($"Getting Server Record AD using json");
                     sortedRecords = GetSortedRecords();
                 }
                 else
                 {
+                    SharpTimerDebug($"Getting Server Record AD using datanase");
                     sortedRecords = await GetSortedRecordsFromDatabase();
                 }
 
                 if (sortedRecords.Count == 0)
                 {
+                    SharpTimerDebug($"No Server Records for this map yet!");
                     return;
                 }
 
@@ -157,15 +161,19 @@ namespace SharpTimer
                 }
             }
 
-            if (playerTimers[player.Slot].TimerRank == null && playerTimers[player.Slot].PB == null)
+            //find a better solution for this by combining all into 1 string to store
+            if (playerTimers[player.Slot].TimerRank == null && playerTimers[player.Slot].PB == null && playerTimers[player.Slot].IsRankPbCached == false)
             {
-                _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, true);
+                SharpTimerDebug($"{player.PlayerName} has rank and pb null... calling handler");
+                _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, player.PlayerName, true);
+                playerTimers[player.Slot].IsRankPbCached = true;
             }
 
             if (removeCollisionEnabled == true)
             {
                 if (player.PlayerPawn.Value.Collision.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING || player.PlayerPawn.Value.Collision.CollisionAttribute.CollisionGroup != (byte)CollisionGroup.COLLISION_GROUP_DISSOLVING)
                 {
+                    SharpTimerDebug($"{player.PlayerName} has wrong collision group... RemovePlayerCollision");
                     RemovePlayerCollision(player);
                 }
             }
@@ -772,7 +780,7 @@ namespace SharpTimer
             int savedPlayerTime;
             if (useMySQL == true)
             {
-                savedPlayerTime = await GetPreviousPlayerRecordFromDatabase(player, steamId, currentMapName);
+                savedPlayerTime = await GetPreviousPlayerRecordFromDatabase(player, steamId, currentMapName, player.PlayerName);
             }
             else
             {
@@ -961,7 +969,7 @@ namespace SharpTimer
             string mapdataFileName = $"SharpTimer/MapData/{currentMapName}.json";
             string mapdataPath = Path.Join(gameDir + "/csgo/cfg", mapdataFileName);
 
-            Task.Run(AddMapInfoToHostname);
+            _ = AddMapInfoToHostname();
 
             if (File.Exists(mapdataPath))
             {
