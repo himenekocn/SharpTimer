@@ -17,6 +17,23 @@ namespace SharpTimer
             useMySQL = bool.TryParse(args, out bool useMySQLValue) ? useMySQLValue : args != "0" && useMySQL;
         }
 
+        [ConsoleCommand("sharptimer_command_spam_cooldown", "Defines the time between commands can be called. Default value: 1")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerCmdCooldownConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            if (float.TryParse(args, out float cooldown) && cooldown > 0)
+            {
+                cmdCooldown = (int)(cooldown * 64);
+                Console.WriteLine($"SharpTimer command cooldown set to {cooldown} seconds.");
+            }
+            else
+            {
+                Console.WriteLine("Invalid interval value. Please provide a positive integer.");
+            }
+        }
+
         [ConsoleCommand("sharptimer_respawn_enabled", "Whether !r is enabled by default or not. Default value: true")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
         public void SharpTimerRespawnConvar(CCSPlayerController? player, CommandInfo command)
@@ -52,6 +69,24 @@ namespace SharpTimer
 
             removeLegsEnabled = bool.TryParse(args, out bool removeLegsEnabledValue) ? removeLegsEnabledValue : args != "0" && removeLegsEnabled;
         }
+
+        [ConsoleCommand("sharptimer_remove_damage", "Whether dealing damage should be disabled or not. Default value: true")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerRemoveDamageConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            disableDamage = bool.TryParse(args, out bool disableDamageValue) ? disableDamageValue : args != "0" && disableDamage;
+        }
+
+        /* [ConsoleCommand("sharptimer_remove_collision", "Whether Player collision should be removed or not. Default value: true")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerRemoveCollisionConvar(CCSPlayerController? player, CommandInfo command)
+        {
+            string args = command.ArgString;
+
+            removeCollisionEnabled = bool.TryParse(args, out bool removeCollisionEnabledValue) ? removeCollisionEnabledValue : args != "0" && removeCollisionEnabled;
+        } */
 
         [ConsoleCommand("sharptimer_checkpoints_enabled", "Whether !cp, !tp and !prevcp are enabled by default or not. Default value: false")]
         [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
@@ -164,6 +199,54 @@ namespace SharpTimer
             }
 
             msgPrefix = $" {ChatColors.Green} {args} {ChatColors.White}";
+        }
+
+        [ConsoleCommand("sharptimer_hud_primary_color", "Primary Color for Timer HUD. Default value: green")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerPrimaryHUDcolor(CCSPlayerController? player, CommandInfo command)
+        {
+
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                primaryHUDcolor = $"green";
+                return;
+            }
+
+            primaryHUDcolor = $"{args}";
+        }
+
+        [ConsoleCommand("sharptimer_hud_secondary_color", "Secondary Color for Timer HUD. Default value: orange")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerSecondaryHUDcolor(CCSPlayerController? player, CommandInfo command)
+        {
+
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                secondaryHUDcolor = $"orange";
+                return;
+            }
+
+            secondaryHUDcolor = $"{args}";
+        }
+
+        [ConsoleCommand("sharptimer_hud_tertiary_color", "Tertiary Color for Timer HUD. Default value: white")]
+        [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+        public void SharpTimerTertiaryHUDcolor(CCSPlayerController? player, CommandInfo command)
+        {
+
+            string args = command.ArgString.Trim();
+
+            if (string.IsNullOrEmpty(args))
+            {
+                tertiaryHUDcolor = $"white";
+                return;
+            }
+
+            tertiaryHUDcolor = $"{args}";
         }
     }
 }
