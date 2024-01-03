@@ -43,7 +43,7 @@ namespace SharpTimer
                     return;
                 }
 
-                Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} Current Server Record on {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
+                Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} 当前服务器记录 {ParseColorToSymbol(primaryHUDcolor)}{currentMapName}{ChatColors.White}: "));
 
                 foreach (var kvp in sortedRecords.Take(1))
                 {
@@ -75,19 +75,19 @@ namespace SharpTimer
         public void PrintAllEnabledCommands(CCSPlayerController player)
         {
             SharpTimerDebug($"Printing Commands for {player.PlayerName}");
-            player.PrintToChat($"{msgPrefix}Available Commands:");
+            player.PrintToChat($"{msgPrefix}可用指令:");
 
-            if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - Respawns you");
-            if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - Lists top 10 records on this map");
-            if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - Shows your current rank and pb");
-            if (goToEnabled) player.PrintToChat($"{msgPrefix}!goto <name> (css_goto) - Teleports you to a player");
+            if (respawnEnabled) player.PrintToChat($"{msgPrefix}!r (css_r) - 重生");
+            if (topEnabled) player.PrintToChat($"{msgPrefix}!top (css_top) - 地图排行前十");
+            if (rankEnabled) player.PrintToChat($"{msgPrefix}!rank (css_rank) - 显示你当前的排行");
+            if (goToEnabled) player.PrintToChat($"{msgPrefix}!goto <name> (css_goto) - tp到一个玩家那");
 
             if (cpEnabled)
             {
-                player.PrintToChat($"{msgPrefix}!cp (css_cp) - Sets a Checkpoint");
-                player.PrintToChat($"{msgPrefix}!tp (css_tp) - Teleports you to the last Checkpoint");
-                player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - Teleports you one Checkpoint back");
-                player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - Teleports you one Checkpoint forward");
+                player.PrintToChat($"{msgPrefix}!cp (css_cp) - 设置记录点");
+                player.PrintToChat($"{msgPrefix}!tp (css_tp) - 传送到最后一个记录点");
+                player.PrintToChat($"{msgPrefix}!prevcp (css_prevcp) - 传送到上一个记录点");
+                player.PrintToChat($"{msgPrefix}!nextcp (css_nextcp) - 传送到下一个记录点");
             }
         }
 
@@ -113,23 +113,21 @@ namespace SharpTimer
                     ? $" <font color='gray' class='fontSize-s'>{GetPlayerPlacement(player)}</font> <font class='fontSize-l' color='{primaryHUDcolor}'>{playerTime}</font>{(playerTimers[playerSlot].CurrentStage != 0 ? $"<font color='gray' class='fontSize-s'> {playerTimers[playerSlot].CurrentStage}/{stageTriggerCount}</font>" : "")} <br>"
                     : "";
 
-            var veloLine = $" {(playerTimers[playerSlot].IsTester ? playerTimers[playerSlot].TesterSparkleGif : "")}<font class='fontSize-s' color='{tertiaryHUDcolor}'>Speed:</font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font>{(playerTimers[playerSlot].IsTester ? playerTimers[playerSlot].TesterSparkleGif : "")} <br>";
+            var veloLine = $" {(playerTimers[playerSlot].IsTester ? playerTimers[playerSlot].TesterSparkleGif : "")}<font class='fontSize-s' color='{tertiaryHUDcolor}'>速度 </font> <font class='fontSize-l' color='{secondaryHUDcolor}'>{formattedPlayerVel}</font> <font class='fontSize-s' color='gray'>({formattedPlayerPre})</font>{(playerTimers[playerSlot].IsTester ? playerTimers[playerSlot].TesterSparkleGif : "")} <br>";
             var veloLineAlt = $" {GetSpeedBar(Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()))} ";
             var infoLine = $"{playerTimers[playerSlot].RankHUDString}" +
                               $"{(currentMapTier != null ? $" | Tier: {currentMapTier}" : "")}" +
-                              $"{(currentMapType != null ? $" | {currentMapType}" : "")} |</font> ";
+                              $"{(currentMapType != null ? $" | {currentMapType}" : "")} |</font> <br><font color='orange' class='fontSize-s'> himeneko.cn</font>";
 
-            var forwardKey = playerTimers[playerSlot].Azerty ? "Z" : "W";
-            var leftKey = playerTimers[playerSlot].Azerty ? "Q" : "A";
-            var backKey = "S";
-            var rightKey = "D";
+            var forwardKey = playerTimers[playerSlot].Azerty ? "🆉" : "🆆";
+            var leftKey = playerTimers[playerSlot].Azerty ? "🆀" : "🅰";
 
             var keysLineNoHtml = $"{((buttons & PlayerButtons.Moveleft) != 0 ? leftKey : "_")} " +
                                     $"{((buttons & PlayerButtons.Forward) != 0 ? forwardKey : "_")} " +
-                                    $"{((buttons & PlayerButtons.Moveright) != 0 ? rightKey : "_")} " +
-                                    $"{((buttons & PlayerButtons.Back) != 0 ? backKey : "_")} " +
-                                    $"{((buttons & PlayerButtons.Jump) != 0 ? "J" : "_")} " +
-                                    $"{((buttons & PlayerButtons.Duck) != 0 ? "C" : "_")}";
+                                    $"{((buttons & PlayerButtons.Moveright) != 0 ? "🅳" : "_")} " +
+                                    $"{((buttons & PlayerButtons.Back) != 0 ? "🆂" : "_")} " +
+                                    $"{((buttons & PlayerButtons.Jump) != 0 ? "🅹" : "_")} " +
+                                    $"{((buttons & PlayerButtons.Duck) != 0 ? "🅲" : "_")}";
 
             var hudContentBuilder = new StringBuilder();
             hudContentBuilder.Append(timerLine);
@@ -1208,7 +1206,7 @@ namespace SharpTimer
             }
             else
             {
-                rank = $"Rank: {placement}/{totalPlayers}";
+                rank = $"排名: {placement}/{totalPlayers}";
             }
 
             return rank;

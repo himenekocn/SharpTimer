@@ -14,9 +14,6 @@
 
   <ItemGroup>
     <PackageReference Include="Nexd.MySQL" Version="1.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CounterStrikeSharp.API" Version="*" />
   </ItemGroup>
 </Project>

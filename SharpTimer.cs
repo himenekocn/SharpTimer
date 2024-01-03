@@ -46,7 +46,7 @@ namespace SharpTimer
                     SharpTimerDebug($"Added player {player.PlayerName} with UserID {player.UserId} to connectedPlayers");
                     playerTimers[player.Slot] = new PlayerTimerInfo();
 
-                    if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}Player {ChatColors.Red}{player.PlayerName} {ChatColors.White}connected!");
+                    if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}玩家 {ChatColors.Red}{player.PlayerName} {ChatColors.White}插入服务器!");
 
                     if (cmdJoinMsgEnabled == true)
                     {
@@ -128,7 +128,7 @@ namespace SharpTimer
                         playerCheckpoints.Remove(player.Slot);
                         SharpTimerDebug($"Removed player {connectedPlayer.PlayerName} with UserID {connectedPlayer.UserId} from connectedPlayers");
 
-                        if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}Player {ChatColors.Red}{connectedPlayer.PlayerName} {ChatColors.White}disconnected!");
+                        if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}玩家 {ChatColors.Red}{connectedPlayer.PlayerName} {ChatColors.White}拔出服务器!");
                     }
 
                     return HookResult.Continue;
@@ -443,7 +443,7 @@ namespace SharpTimer
 
             if (stageTriggers.Any() && stageTriggers.Keys.Count != playerTimers[player.Slot].CurrentStage)
             {
-                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} Error Saving Time: Player current checkpoint does not match final one ({stageTriggers.Keys.Count})");
+                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} 保存时间错误：玩家当前检查点与最终检查点不匹配({stageTriggers.Keys.Count})");
                 playerTimers[player.Slot].IsTimerRunning = false;
                 return;
             }
@@ -460,7 +460,7 @@ namespace SharpTimer
             string timeDifference = "";
             if (previousRecordTicks != 0) timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
 
-            Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}just finished the map in: {ParseColorToSymbol(primaryHUDcolor)}[{FormatTime(currentTicks)}]{ChatColors.White}! {timeDifference}");
+            Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}完成地图 用时: {ParseColorToSymbol(primaryHUDcolor)}[{FormatTime(currentTicks)}]{ChatColors.White}! {timeDifference}");
 
             if (useMySQL == false) _ = RankCommandHandler(player, player.SteamID.ToString(), player.Slot, player.PlayerName, true);
 
@@ -483,7 +483,7 @@ namespace SharpTimer
             string timeDifference = "";
             if (previousRecordTicks != 0) timeDifference = FormatTimeDifference(currentTicks, previousRecordTicks);
 
-            Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}just finished the Bonus{bonusX} in: {ParseColorToSymbol(primaryHUDcolor)}[{FormatTime(currentTicks)}]{ChatColors.White}! {timeDifference}");
+            Server.PrintToChatAll(msgPrefix + $"{ParseColorToSymbol(primaryHUDcolor)}{player.PlayerName} {ChatColors.White}完成了 奖励关{bonusX} 用时: {ParseColorToSymbol(primaryHUDcolor)}[{FormatTime(currentTicks)}]{ChatColors.White}! {timeDifference}");
 
             if (playerTimers[player.Slot].SoundsEnabled != false) player.ExecuteClientCommand($"play {beepSound}");
         }
