@@ -21,26 +21,10 @@ env:
   OUTPUT_PATH: "./SharpTimer"
 
 jobs:
-  build:
-    permissions: write-all
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 7.0.x
-    - name: Restore
-      run: dotnet restore
-    - name: Build
-      run: dotnet build ${{ env.PROJECT_PATH }} -c SharpTimer -o ${{ env.OUTPUT_PATH }}
-
   publish:
     if: github.event_name == 'push'
     permissions: write-all
     runs-on: ubuntu-latest
-    needs: build
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
@@ -51,12 +35,17 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build ${{ env.PROJECT_PATH }} -c SharpTimer -o ${{ env.OUTPUT_PATH }}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: SharpTimer-build-${{ env.BUILD_NUMBER }}
+        path: ../../
     - name: Zip
       uses: thedoctor0/zip-release@0.7.5
       with:
         type: 'zip'
         filename: '${{ env.PROJECT_NAME }}.zip'
-        path: ../
+        path: ../../
     - name: SharpTimer
       uses: ncipollo/release-action@v1.12.0
       with:
