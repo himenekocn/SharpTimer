@@ -45,7 +45,7 @@ jobs:
       with:
         type: 'zip'
         filename: '${{ env.PROJECT_NAME }}.zip'
-        path: ../
+        path: ../../
     - name: SharpTimer
       uses: ncipollo/release-action@v1.12.0
       with:
