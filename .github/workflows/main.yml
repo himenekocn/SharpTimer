@@ -39,7 +39,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: SharpTimer-build-${{ env.BUILD_NUMBER }}
-        path: /
+        path: SharpTimer
     - name: Zip
       uses: thedoctor0/zip-release@0.7.5
       with:
