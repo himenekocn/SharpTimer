@@ -33,9 +33,12 @@ namespace SharpTimer
         private Dictionary<int, Vector?> bonusRespawnPoses = new Dictionary<int, Vector?>();
         private Dictionary<int, QAngle?> bonusRespawnAngs = new Dictionary<int, QAngle?>();
         private Dictionary<nint, int> stageTriggers = new Dictionary<nint, int>();
+        private Dictionary<nint, int> cpTriggers = new Dictionary<nint, int>();
         private Dictionary<int, Vector?> stageTriggerPoses = new Dictionary<int, Vector?>();
         private Dictionary<int, QAngle?> stageTriggerAngs = new Dictionary<int, QAngle?>();
         private int stageTriggerCount;
+        private int cpTriggerCount;
+        private bool useStageTriggers = true;
         public string? currentMapType = null;
         public int? currentMapTier = null;
 
@@ -98,7 +101,7 @@ namespace SharpTimer
 
             {"76561199138382970", Tuple.Create("<img src='https://i.imgur.com/ATRxyFK.gif'>", "<br><img src='https://i.imgur.com/VrO856t.gif'><br>")}, //Panda
 
-            {"76561198033801423", Tuple.Create("<img src='https://i.imgur.com/r6xewP9.gif'>", "<br><img src='https://i.imgur.com/9bMEBrb.gif'><br>")}, //Dowz
+            {"76561198033801423", Tuple.Create("<img src='https://i.imgur.com/r6xewP9.gif'>", "<br><img src='https://i.imgur.com/E1eGyCl.gif'><br>")}, //Dowz
 
             {"0000000000", Tuple.Create("", "")},
         };

@@ -429,7 +429,11 @@ namespace SharpTimer
                 pbTicks = await GetPreviousPlayerRecordFromDatabase(player, steamId, currentMapName, playerName);
             }
 
-            string rankHUDstring = $"{(string.IsNullOrEmpty(rankIcon) ? "" : "<font class='fontSize-s' color='gray'>|</font> " + rankIcon)}<font class='fontSize-s' color='gray'>{(string.IsNullOrEmpty(ranking) ? "" : " | " + ranking)}{(pbTicks != 0 ? $" | {FormatTime(pbTicks)}" : "")}";
+            string rankHUDstring = $"{(!string.IsNullOrEmpty(rankIcon) ? $" {rankIcon}" : "")}" +
+                       $"<font class='fontSize-s' color='gray'>" +
+                       $"{((!string.IsNullOrEmpty(ranking) && string.IsNullOrEmpty(rankIcon)) ? $" {ranking}" : "")}" +
+                       $"{((!string.IsNullOrEmpty(ranking) && !string.IsNullOrEmpty(rankIcon)) ? " | " + ranking : "")}" +
+                       $"{(pbTicks != 0 ? $" | {FormatTime(pbTicks)}" : "")}";
 
             Server.NextFrame(() =>
             {
@@ -592,6 +596,13 @@ namespace SharpTimer
                     return;
                 }
 
+                if (useStageTriggers == false)
+                {
+                    SharpTimerDebug("css_stage failed useStages is false.");
+                    player.PrintToChat(msgPrefix + $" Stages unavalible");
+                    return;
+                }
+
                 // Remove checkpoints for the current player
                 playerCheckpoints.Remove(player.Slot);
 
@@ -640,7 +651,10 @@ namespace SharpTimer
 
                 // Remove checkpoints for the current player
                 playerCheckpoints.Remove(player.Slot);
-                if (stageTriggers.Any()) playerTimers[player.Slot].StageRecords.Clear(); //remove previous stage times if the map has stages
+                if (stageTriggerCount != 0 || cpTriggerCount != 0)//remove previous stage times if the map has stages
+                {
+                    playerTimers[player.Slot].StageRecords.Clear();
+                } 
 
                 if (currentRespawnPos != null)
                 {

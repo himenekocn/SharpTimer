@@ -57,6 +57,8 @@ namespace SharpTimer
         public int TicksSinceLastCmd { get; set; }
         public Dictionary<int, int>? StageRecords { get; set; }
         public int CurrentStage { get; set; }
+        public int CurrentMapStage { get; set; }
+        public int CurrentMapCheckpoint { get; set; }
         public Dictionary<string, PlayerRecord>? SortedCachedRecords { get; set; }
         public CCSPlayer_MovementServices? MovementService { get; set; }
 
