@@ -37,7 +37,7 @@ jobs:
     - name: Build
       run: dotnet build ${{ env.PROJECT_PATH }} -c SharpTimer -o ${{ env.OUTPUT_PATH }}
     - name: Archive build
-        uses: actions/upload-artifact@v3
-        with:
-          name: SharpTimer
-          path: SharpTimer
+      uses: actions/upload-artifact@v3
+      with:
+        name: SharpTimer
+        path: SharpTimer

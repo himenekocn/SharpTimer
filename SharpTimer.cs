@@ -64,6 +64,10 @@ namespace SharpTimer
 
                     if (removeLegsEnabled == true) player.PlayerPawn.Value.Render = Color.FromArgb(254, 254, 254, 254);
 
+                    player.ExecuteClientCommand("sv_minrate 64000");
+                    player.ExecuteClientCommand("rate 64000");
+                    player.ExecuteClientCommand("sv_maxrate 90000");
+
                     //PlayerSettings
                     if (useMySQL == true)
                     {
@@ -107,6 +111,9 @@ namespace SharpTimer
                     if (removeCollisionEnabled == true && player.PlayerPawn != null)
                     {
                         RemovePlayerCollision(player);
+                        player.ExecuteClientCommand("sv_minrate 64000");
+                        player.ExecuteClientCommand("rate 64000");
+                        player.ExecuteClientCommand("sv_maxrate 90000");
                     }
                     return HookResult.Continue;
                 }
