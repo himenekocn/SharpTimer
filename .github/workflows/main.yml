@@ -18,7 +18,7 @@ env:
   BUILD_NUMBER: ${{ github.run_number }}
   PROJECT_PATH: "SharpTimer.csproj"
   PROJECT_NAME: "SharpTimer"
-  OUTPUT_PATH: "./"
+  OUTPUT_PATH: "./SharpTimer"
 
 jobs:
 
