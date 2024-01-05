@@ -90,7 +90,7 @@ namespace SharpTimer
         public string? remoteKZDataSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/kz_.json";
         public string? remoteSurfDataSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/surf_.json";
 
-        public string? testerPersonalGifsSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/tester_bling.json"
+        public string? testerPersonalGifsSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/tester_bling.json";
 
         private readonly WIN_LINUX<int> OnCollisionRulesChangedOffset = new WIN_LINUX<int>(174, 173);
     }
