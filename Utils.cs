@@ -145,6 +145,18 @@ namespace SharpTimer
             return $"{signColor}{sign}{totalDifferenceMinutes:D1}:{secondsWithMilliseconds}";
         }
 
+        static string StringAfterPrefix(string input, string prefix)
+        {
+            int prefixIndex = input.IndexOf(prefix);
+            if (prefixIndex != -1)
+            {
+                int startIndex = prefixIndex + prefix.Length;
+                string result = input.Substring(startIndex);
+                return result;
+            }
+            return string.Empty;
+        }
+
         string ParseColorToSymbol(string input)
         {
             Dictionary<string, string> colorNameSymbolMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
