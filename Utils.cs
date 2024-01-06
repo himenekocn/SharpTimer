@@ -489,8 +489,8 @@ namespace SharpTimer
 
             Server.NextFrame(() =>
             {
-                Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString}");
-                SharpTimerDebug($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+                //Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString}");
+                //SharpTimerDebug($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
             });
         }
 
@@ -536,7 +536,7 @@ namespace SharpTimer
 
         private void LoadMapData()
         {
-            Server.ExecuteCommand($"hostname {defaultServerHostname}");
+            //Server.ExecuteCommand($"hostname {defaultServerHostname}");
 
             if (srEnabled == true) ServerRecordADtimer();
 
@@ -554,7 +554,7 @@ namespace SharpTimer
             currentMapTier = null; //making sure previous map tier and type are wiped
             currentMapType = null;
 
-            _ = AddMapInfoToHostname();
+            //_ = AddMapInfoToHostname();
 
             if (triggerPushFixEnabled == true) FindTriggerPushData();
 
