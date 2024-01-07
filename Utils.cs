@@ -377,12 +377,10 @@ namespace SharpTimer
 
             float maxX = Math.Max(corner1.X, corner2.X);
             float maxY = Math.Max(corner1.Y, corner2.Y);
-            float maxZ = Math.Max(corner1.Z, corner1.Z);
             float maxZ = Math.Max(corner1.Z, corner2.Z + fakeTriggerHeight);
 
             return playerVector.X >= minX && playerVector.X <= maxX &&
                    playerVector.Y >= minY && playerVector.Y <= maxY &&
-                   playerVector.Z >= minZ && playerVector.Z <= maxZ + fakeTriggerHeight;
                    playerVector.Z >= minZ && playerVector.Z <= maxZ;
         }
 
