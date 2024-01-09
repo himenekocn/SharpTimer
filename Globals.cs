@@ -92,7 +92,6 @@ namespace SharpTimer
         public string? playerRecordsPath;
         public string? currentMapName;
         public string? defaultServerHostname = ConVar.Find("hostname").StringValue;
-        private StringBuilder hudContentBuilder = new StringBuilder();
 
         public string? remoteBhopDataSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/bhop_.json";
         public string? remoteKZDataSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/kz_.json";

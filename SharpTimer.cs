@@ -41,17 +41,12 @@ namespace SharpTimer
                 else
                 {
 
-                    connectedPlayers[player.Slot] = player;
-
-                    SharpTimerDebug($"Added player {player.PlayerName} with UserID {player.UserId} to connectedPlayers");
+                    connectedPlayers[player.Slot] = new CCSPlayerController(player.Handle);
                     playerTimers[player.Slot] = new PlayerTimerInfo();
 
                     if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}玩家 {ChatColors.Red}{player.PlayerName} {ChatColors.White}插入服务器!");
 
-                    if (cmdJoinMsgEnabled == true)
-                    {
-                        PrintAllEnabledCommands(player);
-                    }
+                    if (cmdJoinMsgEnabled == true) PrintAllEnabledCommands(player);
 
                     playerTimers[player.Slot].MovementService = new CCSPlayer_MovementServices(player.PlayerPawn.Value.MovementServices!.Handle);
                     playerTimers[player.Slot].StageTimes = new Dictionary<int, int>();
@@ -77,6 +72,11 @@ namespace SharpTimer
                         //_ = SavePlayerStatToDatabase(player.SteamID.ToString(), "MouseSens", player.GetConVarValue("sensitivity").ToString());
                     }
 
+                    SharpTimerDebug($"Added player {player.PlayerName} with UserID {player.UserId} to connectedPlayers");
+                    SharpTimerDebug($"Total players connected: {connectedPlayers.Count}");
+                    SharpTimerDebug($"Total playerTimers: {playerTimers.Count}");
+                    SharpTimerDebug($"Total playerCheckpoints: {playerCheckpoints.Count}");
+
                     return HookResult.Continue;
                 }
             });
@@ -92,6 +92,15 @@ namespace SharpTimer
                     SharpTimerDebug("Re-Executing SharpTimer/custom_exec");
                     Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
                 });
+
+                foreach (CCSPlayerController player in connectedPlayers.Values)
+                {
+                    if (player == null || player.IsBot || !player.IsValid) continue;
+
+                    player.ExecuteClientCommand("sv_minrate 64000");
+                    player.ExecuteClientCommand("rate 64000");
+                    player.ExecuteClientCommand("sv_maxrate 89000");
+                }
                 return HookResult.Continue;
             });
 
@@ -133,7 +142,10 @@ namespace SharpTimer
                         connectedPlayers.Remove(player.Slot);
                         playerTimers.Remove(player.Slot);
                         playerCheckpoints.Remove(player.Slot);
-                        SharpTimerDebug($"Removed player {connectedPlayer.PlayerName} with UserID {connectedPlayer.UserId} from connectedPlayers");
+                        SharpTimerDebug($"Removed player {connectedPlayer.PlayerName} with UserID {connectedPlayer.UserId} from connectedPlayers.");
+                        SharpTimerDebug($"Total players connected: {connectedPlayers.Count}");
+                        SharpTimerDebug($"Total playerTimers: {playerTimers.Count}");
+                        SharpTimerDebug($"Total playerCheckpoints: {playerCheckpoints.Count}");
 
                         if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}玩家 {ChatColors.Red}{connectedPlayer.PlayerName} {ChatColors.White}拔出服务器!");
                     }
@@ -142,15 +154,17 @@ namespace SharpTimer
                 }
             });
 
-            RegisterListener<Listeners.OnTick>(() =>
+            /* RegisterListener<Listeners.OnTick>(() =>
             {
                 foreach (var playerEntry in connectedPlayers)
                 {
                     var player = playerEntry.Value;
-                    if (player == null) continue;
-                    TimerOnTick(player, player.Slot);
+                    
+                    player.PrintToCenter($"{FormatTime(playerTimers[player.Slot].TimerTicks)}");
+                    if(playerTimers[player.Slot].IsTimerRunning) playerTimers[player.Slot].TimerTicks++;
                 }
-            });
+            });*/
+            RegisterListener<Listeners.OnTick>(TimerOnTick);
 
             HookEntityOutput("trigger_multiple", "OnStartTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
             {
