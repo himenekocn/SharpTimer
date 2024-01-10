@@ -16,7 +16,7 @@ namespace SharpTimer
         public Dictionary<string, PlayerRecord>? SortedCachedRecords = new Dictionary<string, PlayerRecord>();
 
         public override string ModuleName => "SharpTimer";
-        public override string ModuleVersion => $"0.1.7 - {new DateTime(Builtin.CompileTime, DateTimeKind.Utc)}";
+        public override string ModuleVersion => $"0.1.9 - {new DateTime(Builtin.CompileTime, DateTimeKind.Utc)}";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
         public override string ModuleDescription => "A simple CSS Timer Plugin";
         public string msgPrefix = $"[SharpTimer] ";
@@ -24,6 +24,9 @@ namespace SharpTimer
         public string secondaryHUDcolor = "orange";
         public string tertiaryHUDcolor = "white";
         public string primaryChatColor = "";
+        public string startBeamColor = "";
+        public string endBeamColor = "";
+        public bool beamColorOverride = false;
         public string currentMapStartTrigger = "trigger_startzone";
         public string currentMapEndTrigger = "trigger_endzone";
         public Vector currentMapStartC1 = new Vector(0, 0, 0);
@@ -59,6 +62,7 @@ namespace SharpTimer
         public bool removeCollisionEnabled = true;
         public bool disableDamage = true;
         public bool cpEnabled = false;
+        public bool use2DSpeed = false;
         public bool removeCpRestrictEnabled = false;
         public bool cpOnlyWhenTimerStopped = true;
         public bool connectMsgEnabled = true;

@@ -37,7 +37,7 @@ namespace SharpTimer
                     return;
                 }
 
-                Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} 当前服务器记录 {primaryChatColor}{currentMapName}{ChatColors.White}: "));
+                Server.NextFrame(() => Server.PrintToChatAll($"{msgPrefix} Current Server Record on {primaryChatColor}{currentMapName}{ChatColors.White}: "));
 
                 foreach (var kvp in sortedRecords.Take(1))
                 {
@@ -249,8 +249,18 @@ namespace SharpTimer
             return Math.Sqrt(rDiff * rDiff + gDiff * gDiff + bDiff * bDiff);
         }
 
-        public void DrawLaserBetween(Vector startPos, Vector endPos)
+        public void DrawLaserBetween(Vector startPos, Vector endPos, string _color = "")
         {
+            string beamColor = "";
+            if(beamColorOverride == true)
+            {
+                beamColor = _color;
+            }
+            else
+            {
+                beamColor = primaryHUDcolor;
+            }
+
             CBeam beam = Utilities.CreateEntityByName<CBeam>("beam");
             if (beam == null)
             {
@@ -258,13 +268,13 @@ namespace SharpTimer
                 return;
             }
 
-            if (IsHexColorCode(primaryHUDcolor))
+            if (IsHexColorCode(beamColor))
             {
-                beam.Render = ColorTranslator.FromHtml(primaryHUDcolor);
+                beam.Render = ColorTranslator.FromHtml(beamColor);
             }
             else
             {
-                beam.Render = Color.FromName(primaryHUDcolor);
+                beam.Render = Color.FromName(beamColor);
             }
 
             beam.Width = 1.5f;
@@ -274,61 +284,65 @@ namespace SharpTimer
             beam.EndPos.X = endPos.X;
             beam.EndPos.Y = endPos.Y;
             beam.EndPos.Z = endPos.Z;
+            beam.FadeMinDist = 9999;
 
             beam.DispatchSpawn();
             SharpTimerDebug($"Beam Spawned at S:{startPos} E:{beam.EndPos}");
         }
 
-        public void DrawWireframe2D(Vector corner1, Vector corner2, float height = 50)
+        public void DrawWireframe2D(Vector corner1, Vector corner2, string _color, float height = 50)
         {
-            Vector[] corners = new Vector[8];
-            corners[0] = corner1;
-            corners[1] = new Vector(corner2.X, corner1.Y, corner1.Z);
-            corners[2] = new Vector(corner1.X, corner2.Y, corner1.Z);
-            corners[3] = corner2;
+            Vector corner3 = new Vector(corner2.X, corner1.Y, corner1.Z);
+            Vector corner4 = new Vector(corner1.X, corner2.Y, corner1.Z);
 
-            for (int i = 0; i < 4; i++)
-                corners[i + 4] = new Vector(corners[i].X, corners[i].Y, corners[i].Z + height);
+            Vector corner1_top = new Vector(corner1.X, corner1.Y, corner1.Z + height);
+            Vector corner2_top = new Vector(corner2.X, corner2.Y, corner2.Z + height);
+            Vector corner3_top = new Vector(corner2.X, corner1.Y, corner1.Z + height);
+            Vector corner4_top = new Vector(corner1.X, corner2.Y, corner1.Z + height);
 
-            for (int i = 0; i < 4; i++)
-            {
-                DrawLaserBetween(corners[i], corners[(i + 1) % 4]);
-                DrawLaserBetween(corners[i], corners[i + 4]);
-            }
+            DrawLaserBetween(corner1, corner3, _color);
+            DrawLaserBetween(corner1, corner4, _color);
+            DrawLaserBetween(corner2, corner3, _color);
+            DrawLaserBetween(corner2, corner4, _color);
 
-            for (int i = 4; i < 8; i++)
-            {
-                DrawLaserBetween(corners[i], corners[(i + 1) % 4 + 4]);
-                DrawLaserBetween(corners[i], corners[i - 4]);
-            }
+            DrawLaserBetween(corner1_top, corner3_top, _color);
+            DrawLaserBetween(corner1_top, corner4_top, _color);
+            DrawLaserBetween(corner2_top, corner3_top, _color);
+            DrawLaserBetween(corner2_top, corner4_top, _color);
 
-            for (int i = 0; i < 4; i++)
-                DrawLaserBetween(corners[i], corners[i + 4]);
+            DrawLaserBetween(corner1, corner1_top, _color);
+            DrawLaserBetween(corner2, corner2_top, _color);
+            DrawLaserBetween(corner3, corner3_top, _color);
+            DrawLaserBetween(corner4, corner4_top, _color);
         }
 
-        public void DrawWireframe3D(Vector corner1, Vector corner8)
+        public void DrawWireframe3D(Vector corner1, Vector corner8, string _color)
         {
-            Vector[] corners = new Vector[8];
-            corners[0] = corner1;
-            corners[1] = new Vector(corner1.X, corner8.Y, corner1.Z);
-            corners[2] = new Vector(corner8.X, corner8.Y, corner1.Z);
-            corners[3] = new Vector(corner8.X, corner1.Y, corner1.Z);
-            corners[4] = new Vector(corner8.X, corner1.Y, corner8.Z);
-            corners[5] = new Vector(corner1.X, corner1.Y, corner8.Z);
-            corners[6] = new Vector(corner1.X, corner8.Y, corner8.Z);
-            corners[7] = corner8;
+            Vector corner2 = new Vector(corner1.X, corner8.Y, corner1.Z);
+            Vector corner3 = new Vector(corner8.X, corner8.Y, corner1.Z);
+            Vector corner4 = new Vector(corner8.X, corner1.Y, corner1.Z);
 
-            for (int i = 0; i < 4; i++)
-            {
-                DrawLaserBetween(corners[i], corners[(i + 1) % 4]);
-                DrawLaserBetween(corners[i + 4], corners[(i + 1) % 4 + 4]);
-                DrawLaserBetween(corners[i], corners[i + 4]);
-            }
+            Vector corner5 = new Vector(corner8.X, corner1.Y, corner8.Z);
+            Vector corner6 = new Vector(corner1.X, corner1.Y, corner8.Z);
+            Vector corner7 = new Vector(corner1.X, corner8.Y, corner8.Z);
 
-            for (int i = 0; i < 4; i++)
-            {
-                DrawLaserBetween(corners[i], corners[i + 4]);
-            }
+            //top square
+            DrawLaserBetween(corner1, corner2, _color);
+            DrawLaserBetween(corner2, corner3, _color);
+            DrawLaserBetween(corner3, corner4, _color);
+            DrawLaserBetween(corner4, corner1, _color);
+
+            //bottom square
+            DrawLaserBetween(corner5, corner6, _color);
+            DrawLaserBetween(corner6, corner7, _color);
+            DrawLaserBetween(corner7, corner8, _color);
+            DrawLaserBetween(corner8, corner5, _color);
+
+            //connect them both to build a cube
+            DrawLaserBetween(corner1, corner6, _color);
+            DrawLaserBetween(corner2, corner7, _color);
+            DrawLaserBetween(corner3, corner8, _color);
+            DrawLaserBetween(corner4, corner5, _color);
         }
 
         private bool IsVectorInsideBox(Vector playerVector, Vector corner1, Vector corner2)
@@ -385,13 +399,24 @@ namespace SharpTimer
             string mapRecordsPath = Path.Combine(playerRecordsPath, bonusX == 0 ? $"{currentMapName}.json" : $"{currentMapName}_bonus{bonusX}.json");
 
             Dictionary<string, PlayerRecord> records;
-            if (File.Exists(mapRecordsPath))
+
+            try
             {
-                string json = File.ReadAllText(mapRecordsPath);
-                records = JsonSerializer.Deserialize<Dictionary<string, PlayerRecord>>(json) ?? new Dictionary<string, PlayerRecord>();
+                using (JsonDocument jsonDocument = LoadJson(mapRecordsPath))
+                {
+                    if (jsonDocument != null)
+                    {
+                        records = JsonSerializer.Deserialize<Dictionary<string, PlayerRecord>>(jsonDocument.RootElement.GetRawText()) ?? new Dictionary<string, PlayerRecord>();
+                    }
+                    else
+                    {
+                        records = new Dictionary<string, PlayerRecord>();
+                    }
+                }
             }
-            else
+            catch (Exception ex)
             {
+                SharpTimerError($"Error in GetSortedRecords: {ex.Message}");
                 records = new Dictionary<string, PlayerRecord>();
             }
 
@@ -406,16 +431,16 @@ namespace SharpTimer
             return sortedRecords;
         }
 
-        private async Task<(int? Tier, string? Type)> FineMapInfoFromHTTP(string url)
+        private async Task<(int? Tier, string? Type)> FindMapInfoFromHTTP(string url)
         {
             try
             {
                 SharpTimerDebug($"Trying to fetch remote_data for {currentMapName} from {url}");
-                using (HttpClient client = new HttpClient())
-                {
-                    var response = await client.GetStringAsync(url);
-                    var jsonDocument = JsonDocument.Parse(response);
 
+                var response = await httpClient.GetStringAsync(url);
+
+                using (var jsonDocument = JsonDocument.Parse(response))
+                {
                     if (jsonDocument.RootElement.TryGetProperty(currentMapName, out var mapInfo))
                     {
                         int? tier = null;
@@ -449,19 +474,22 @@ namespace SharpTimer
         private async Task GetMapInfo()
         {
             string mapInfoSource = GetMapInfoSource();
-            var (mapTier, mapType) = await FineMapInfoFromHTTP(mapInfoSource);
+            var (mapTier, mapType) = await FindMapInfoFromHTTP(mapInfoSource);
             currentMapTier = mapTier;
             currentMapType = mapType;
             string tierString = currentMapTier != null ? $" | Tier: {currentMapTier}" : "";
             string typeString = currentMapType != null ? $" | {currentMapType}" : "";
 
-            if (!autosetHostname) return;
-
-            Server.NextFrame(() =>
+            if (autosetHostname == true)
             {
-                //Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString}");
-                //SharpTimerDebug($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
-            });
+                Server.NextFrame(() =>
+                {
+                    Server.ExecuteCommand($"hostname {defaultServerHostname}{tierString}{typeString}");
+                    SharpTimerDebug($"SharpTimer Hostname Updated to: {ConVar.Find("hostname").StringValue}");
+                });
+            }
+
+
         }
 
         private string GetMapInfoSource()
@@ -497,7 +525,7 @@ namespace SharpTimer
                 bonusRespawnPoses.Clear();
                 bonusRespawnAngs.Clear();
 
-                cpTriggers.Clear();// make sure old data is flushed in case new map uses fake zones
+                cpTriggers.Clear();         // make sure old data is flushed in case new map uses fake zones
                 stageTriggers.Clear();
                 stageTriggerAngs.Clear();
                 stageTriggerPoses.Clear();
@@ -506,8 +534,7 @@ namespace SharpTimer
 
         private void LoadMapData()
         {
-            //if (autosetHostname) Server.ExecuteCommand($"hostname {defaultServerHostname}");
-
+            Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
             if (srEnabled == true) ServerRecordADtimer();
 
             currentMapName = Server.MapName;
@@ -529,109 +556,151 @@ namespace SharpTimer
             currentMapTier = null; //making sure previous map tier and type are wiped
             currentMapType = null;
 
-            //_ = GetMapInfo();
+            _ = GetMapInfo();
 
             if (triggerPushFixEnabled == true) FindTriggerPushData();
 
             primaryChatColor = ParseColorToSymbol(primaryHUDcolor);
 
-            if (File.Exists(mapdataPath))
+            try
             {
-                string json = File.ReadAllText(mapdataPath);
-                var mapInfo = JsonSerializer.Deserialize<MapInfo>(json);
-                SharpTimerConPrint($"Map data json found for map: {currentMapName}!");
-
-                if (!string.IsNullOrEmpty(mapInfo.MapStartC1) && !string.IsNullOrEmpty(mapInfo.MapStartC2) && !string.IsNullOrEmpty(mapInfo.MapEndC1) && !string.IsNullOrEmpty(mapInfo.MapEndC2))
+                using (JsonDocument jsonDocument = LoadJson(mapdataPath))
                 {
-                    currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
-                    currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
-                    currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
-                    currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
-                    useTriggers = false;
-                    SharpTimerConPrint($"Found Fake Trigger Corners: START {currentMapStartC1}, {currentMapStartC2} | END {currentMapEndC1}, {currentMapEndC2}");
-                }
-
-                if (!string.IsNullOrEmpty(mapInfo.MapStartTrigger) && !string.IsNullOrEmpty(mapInfo.MapEndTrigger))
-                {
-                    currentMapStartTrigger = mapInfo.MapStartTrigger;
-                    currentMapEndTrigger = mapInfo.MapEndTrigger;
-                    useTriggers = true;
-                    SharpTimerConPrint($"Found Trigger Names: START {currentMapStartTrigger} | END {currentMapEndTrigger}");
-                }
-
-                if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
-                {
-                    currentRespawnPos = ParseVector(mapInfo.RespawnPos);
-                    SharpTimerConPrint($"Found RespawnPos: {currentRespawnPos}");
-                }
-                else
-                {
-                    (currentRespawnPos, currentRespawnAng) = FindStartTriggerPos();
-
-                    FindBonusStartTriggerPos();
-                    FindStageTriggers();
-                    FindCheckpointTriggers();
-                    SharpTimerConPrint($"RespawnPos not found, trying to hook trigger pos instead");
-                    if (currentRespawnPos == null)
+                    if (jsonDocument != null)
                     {
-                        SharpTimerConPrint($"Hooking Trigger RespawnPos Failed!");
+                        var mapInfo = JsonSerializer.Deserialize<MapInfo>(jsonDocument.RootElement.GetRawText());
+                        SharpTimerConPrint($"Map data json found for map: {currentMapName}!");
+
+                        if (!string.IsNullOrEmpty(mapInfo.MapStartC1) && !string.IsNullOrEmpty(mapInfo.MapStartC2) && !string.IsNullOrEmpty(mapInfo.MapEndC1) && !string.IsNullOrEmpty(mapInfo.MapEndC2))
+                        {
+                            currentMapStartC1 = ParseVector(mapInfo.MapStartC1);
+                            currentMapStartC2 = ParseVector(mapInfo.MapStartC2);
+                            currentMapEndC1 = ParseVector(mapInfo.MapEndC1);
+                            currentMapEndC2 = ParseVector(mapInfo.MapEndC2);
+                            useTriggers = false;
+                            SharpTimerConPrint($"Found Fake Trigger Corners: START {currentMapStartC1}, {currentMapStartC2} | END {currentMapEndC1}, {currentMapEndC2}");
+                        }
+
+                        if (!string.IsNullOrEmpty(mapInfo.MapStartTrigger) && !string.IsNullOrEmpty(mapInfo.MapEndTrigger))
+                        {
+                            currentMapStartTrigger = mapInfo.MapStartTrigger;
+                            currentMapEndTrigger = mapInfo.MapEndTrigger;
+                            useTriggers = true;
+                            SharpTimerConPrint($"Found Trigger Names: START {currentMapStartTrigger} | END {currentMapEndTrigger}");
+                        }
+
+                        if (!string.IsNullOrEmpty(mapInfo.RespawnPos))
+                        {
+                            currentRespawnPos = ParseVector(mapInfo.RespawnPos);
+                            SharpTimerConPrint($"Found RespawnPos: {currentRespawnPos}");
+                        }
+                        else
+                        {
+                            (currentRespawnPos, currentRespawnAng) = FindStartTriggerPos();
+
+                            FindBonusStartTriggerPos();
+                            FindStageTriggers();
+                            FindCheckpointTriggers();
+                            SharpTimerConPrint($"RespawnPos not found, trying to hook trigger pos instead");
+                            if (currentRespawnPos == null)
+                            {
+                                SharpTimerConPrint($"Hooking Trigger RespawnPos Failed!");
+                            }
+                            else
+                            {
+                                SharpTimerConPrint($"Hooking Trigger RespawnPos Success! {currentRespawnPos}");
+                            }
+                        }
+
+                        if (!string.IsNullOrEmpty(mapInfo.OverrideDisableTelehop))
+                        {
+                            try
+                            {
+                                currentMapOverrideDisableTelehop = bool.Parse(mapInfo.OverrideDisableTelehop);
+                                SharpTimerConPrint($"Overriding Telehop...");
+                            }
+                            catch (FormatException)
+                            {
+                                Console.WriteLine("Invalid boolean string format for OverrideDisableTelehop");
+                            }
+                        }
+                        else
+                        {
+                            currentMapOverrideDisableTelehop = false;
+                        }
                     }
                     else
                     {
-                        SharpTimerConPrint($"Hooking Trigger RespawnPos Success! {currentRespawnPos}");
+                        SharpTimerConPrint($"Map data json not found for map: {currentMapName}!");
+                        SharpTimerConPrint($"Trying to hook Triggers supported by default!");
+                        (currentRespawnPos, currentRespawnAng) = FindStartTriggerPos();
+                        FindBonusStartTriggerPos();
+                        FindStageTriggers();
+                        FindCheckpointTriggers();
+                        if (currentRespawnPos == null)
+                        {
+                            SharpTimerConPrint($"Hooking Trigger RespawnPos Failed!");
+                        }
+                        else
+                        {
+                            SharpTimerConPrint($"Hooking Trigger RespawnPos Success! {currentRespawnPos}");
+                        }
+                        useTriggers = true;
                     }
-                }
 
-                if (!string.IsNullOrEmpty(mapInfo.OverrideDisableTelehop))
-                {
-                    try
+                    if (useTriggers == false)
                     {
-                        currentMapOverrideDisableTelehop = bool.Parse(mapInfo.OverrideDisableTelehop);
-                        SharpTimerConPrint($"Overriding Telehop...");
+                        DrawWireframe2D(currentMapStartC1, currentMapStartC2, startBeamColor, fakeTriggerHeight);
+                        DrawWireframe2D(currentMapEndC1, currentMapEndC2, endBeamColor, fakeTriggerHeight);
                     }
-                    catch (FormatException)
+                    else
                     {
-                        Console.WriteLine("Invalid boolean string format for OverrideDisableTelehop");
+                        var (startRight, startLeft, endRight, endLeft) = FindTriggerBounds();
+
+                        if (startRight == null || startLeft == null || endRight == null || endLeft == null) return;
+
+                        DrawWireframe3D(startRight, startLeft, startBeamColor);
+                        DrawWireframe3D(endRight, endLeft, endBeamColor);
                     }
-                }
-                else
-                {
-                    currentMapOverrideDisableTelehop = false;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                SharpTimerConPrint($"Map data json not found for map: {currentMapName}!");
-                SharpTimerConPrint($"Trying to hook Triggers supported by default!");
-                (currentRespawnPos, currentRespawnAng) = FindStartTriggerPos();
-                FindBonusStartTriggerPos();
-                FindStageTriggers();
-                FindCheckpointTriggers();
-                if (currentRespawnPos == null)
-                {
-                    SharpTimerConPrint($"Hooking Trigger RespawnPos Failed!");
-                }
-                else
-                {
-                    SharpTimerConPrint($"Hooking Trigger RespawnPos Success! {currentRespawnPos}");
-                }
-                useTriggers = true;
+                SharpTimerError($"Error in LoadMapData: {ex.Message}");
             }
 
             if (useTriggers == false)
             {
-                DrawWireframe2D(currentMapStartC1, currentMapStartC2, fakeTriggerHeight);
-                DrawWireframe2D(currentMapEndC1, currentMapEndC2, fakeTriggerHeight);
+                DrawWireframe2D(currentMapStartC1, currentMapStartC2, startBeamColor, fakeTriggerHeight);
+                DrawWireframe2D(currentMapEndC1, currentMapEndC2, endBeamColor, fakeTriggerHeight);
             }
             else
             {
-                var (startRight, startLeft, endRight, endLeft) = FindTriggerCorners();
+                var (startRight, startLeft, endRight, endLeft) = FindTriggerBounds();
 
                 if (startRight == null || startLeft == null || endRight == null || endLeft == null) return;
 
-                DrawWireframe3D(startRight, startLeft);
-                DrawWireframe3D(endRight, endLeft);
+                DrawWireframe3D(startRight, startLeft, startBeamColor);
+                DrawWireframe3D(endRight, endLeft, endBeamColor);
             }
+        }
+
+        private JsonDocument LoadJson(string path)
+        {
+            if (File.Exists(path))
+            {
+                try
+                {
+                    string json = File.ReadAllText(path);
+                    return JsonDocument.Parse(json);
+                }
+                catch (Exception ex)
+                {
+                    SharpTimerError($"Error parsing JSON file: {path}, Error: {ex.Message}");
+                }
+            }
+
+            return null;
         }
     }
 }

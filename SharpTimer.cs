@@ -1,6 +1,7 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Drawing;
@@ -17,6 +18,8 @@ namespace SharpTimer
 
             gameDir = Server.GameDirectory;
             SharpTimerDebug($"Set gameDir to {gameDir}");
+
+            defaultServerHostname = ConVar.Find("hostname").StringValue;
 
             string recordsFileName = "SharpTimer/player_records.json";
             playerRecordsPath = Path.Join(gameDir + "/csgo/cfg", recordsFileName);
@@ -119,10 +122,17 @@ namespace SharpTimer
                     if (removeCollisionEnabled == true && player.PlayerPawn != null)
                     {
                         RemovePlayerCollision(player);
+                    }
+
+                    foreach (CCSPlayerController player in connectedPlayers.Values)
+                    {
+                        if (player == null || player.IsBot || !player.IsValid) continue;
+
                         player.ExecuteClientCommand("sv_minrate 64000");
                         player.ExecuteClientCommand("rate 64000");
-                        player.ExecuteClientCommand("sv_maxrate 90000");
+                        player.ExecuteClientCommand("sv_maxrate 89000");
                     }
+
                     return HookResult.Continue;
                 }
             });
@@ -150,20 +160,19 @@ namespace SharpTimer
                         if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}玩家 {ChatColors.Red}{connectedPlayer.PlayerName} {ChatColors.White}拔出服务器!");
                     }
 
+                    foreach (CCSPlayerController player in connectedPlayers.Values)
+                    {
+                        if (player == null || player.IsBot || !player.IsValid) continue;
+
+                        player.ExecuteClientCommand("sv_minrate 64000");
+                        player.ExecuteClientCommand("rate 64000");
+                        player.ExecuteClientCommand("sv_maxrate 89000");
+                    }
+
                     return HookResult.Continue;
                 }
             });
 
-            /* RegisterListener<Listeners.OnTick>(() =>
-            {
-                foreach (var playerEntry in connectedPlayers)
-                {
-                    var player = playerEntry.Value;
-                    
-                    player.PrintToCenter($"{FormatTime(playerTimers[player.Slot].TimerTicks)}");
-                    if(playerTimers[player.Slot].IsTimerRunning) playerTimers[player.Slot].TimerTicks++;
-                }
-            });*/
             RegisterListener<Listeners.OnTick>(TimerOnTick);
 
             HookEntityOutput("trigger_multiple", "OnStartTouch", (CEntityIOOutput output, string name, CEntityInstance activator, CEntityInstance caller, CVariant value, float delay) =>
@@ -232,9 +241,11 @@ namespace SharpTimer
                             playerTimers[player.Slot].CurrentMapCheckpoint = 0;
                         }
 
-                        if (maxStartingSpeedEnabled == true && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed)
+                        if ((maxStartingSpeedEnabled == true && use2DSpeed == false && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length()) > maxStartingSpeed) ||
+                            (maxStartingSpeedEnabled == true && use2DSpeed == true  && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed))
                         {
-                            AdjustPlayerVelocity(player, maxStartingSpeed);
+                            Action<CCSPlayerController?, float, bool> adjustVelocity = use2DSpeed ? AdjustPlayerVelocity2D : AdjustPlayerVelocity;
+                            adjustVelocity(player, maxStartingSpeed, false);
                         }
 
                         SharpTimerDebug($"Player {player.PlayerName} entered StartZone");
@@ -261,9 +272,11 @@ namespace SharpTimer
                         playerTimers[player.Slot].BonusTimerTicks = 0;
                         playerCheckpoints.Remove(player.Slot);
 
-                        if (maxStartingSpeedEnabled == true && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed)
+                        if ((maxStartingSpeedEnabled == true && use2DSpeed == false && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length()) > maxStartingSpeed) ||
+                            (maxStartingSpeedEnabled == true && use2DSpeed == true  && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed))
                         {
-                            AdjustPlayerVelocity(player, maxStartingSpeed);
+                            Action<CCSPlayerController?, float, bool> adjustVelocity = use2DSpeed ? AdjustPlayerVelocity2D : AdjustPlayerVelocity;
+                            adjustVelocity(player, maxStartingSpeed, false);
                         }
                         SharpTimerDebug($"Player {player.PlayerName} entered Bonus{startBonusX} StartZone");
                         return HookResult.Continue;
@@ -303,9 +316,11 @@ namespace SharpTimer
                     {
                         OnTimerStart(player);
 
-                        if (maxStartingSpeedEnabled == true && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed)
+                        if ((maxStartingSpeedEnabled == true && use2DSpeed == false && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length()) > maxStartingSpeed) ||
+                            (maxStartingSpeedEnabled == true && use2DSpeed == true  && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed))
                         {
-                            AdjustPlayerVelocity(player, maxStartingSpeed);
+                            Action<CCSPlayerController?, float, bool> adjustVelocity = use2DSpeed ? AdjustPlayerVelocity2D : AdjustPlayerVelocity;
+                            adjustVelocity(player, maxStartingSpeed, false);
                         }
 
                         SharpTimerDebug($"Player {player.PlayerName} left StartZone");
@@ -319,9 +334,11 @@ namespace SharpTimer
                     {
                         OnTimerStart(player, StartBonusX);
 
-                        if (maxStartingSpeedEnabled == true && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed)
+                        if ((maxStartingSpeedEnabled == true && use2DSpeed == false && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length()) > maxStartingSpeed) ||
+                            (maxStartingSpeedEnabled == true && use2DSpeed == true  && Math.Round(player.PlayerPawn.Value.AbsVelocity.Length2D()) > maxStartingSpeed))
                         {
-                            AdjustPlayerVelocity(player, maxStartingSpeed);
+                            Action<CCSPlayerController?, float, bool> adjustVelocity = use2DSpeed ? AdjustPlayerVelocity2D : AdjustPlayerVelocity;
+                            adjustVelocity(player, maxStartingSpeed, false);
                         }
 
                         SharpTimerDebug($"Player {player.PlayerName} left BonusStartZone {StartBonusX}");
@@ -362,7 +379,11 @@ namespace SharpTimer
 
                     if (!IsAllowedPlayer(player)) return HookResult.Continue;
 
-                    if (IsAllowedPlayer(player) && resetTriggerTeleportSpeedEnabled == true && currentMapOverrideDisableTelehop == false) AdjustPlayerVelocity(player, 0);
+                    if (IsAllowedPlayer(player) && resetTriggerTeleportSpeedEnabled == true && currentMapOverrideDisableTelehop == false)
+                    {
+                        Action<CCSPlayerController?, float, bool> adjustVelocity = use2DSpeed ? AdjustPlayerVelocity2D : AdjustPlayerVelocity;
+                        adjustVelocity(player, 0, false);
+                    }
 
                     return HookResult.Continue;
                 }
@@ -417,16 +438,13 @@ namespace SharpTimer
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) && disableDamage == true)
             {
+                SharpTimerDebug($"TakeDamage hook...");
                 VirtualFunctions.CBaseEntity_TakeDamageOldFunc.Hook((h =>
                 {
                     if (disableDamage == false || h == null) return HookResult.Continue;
-
                     var damageInfoParam = h.GetParam<CTakeDamageInfo>(1);
-
                     if (damageInfoParam == null) return HookResult.Continue;
-
                     if (disableDamage == true) damageInfoParam.Damage = 0;
-
                     return HookResult.Continue;
                 }), HookMode.Pre);
             }

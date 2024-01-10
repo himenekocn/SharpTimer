@@ -351,37 +351,35 @@ namespace SharpTimer
             }
         }
 
-        private (Vector? startRight, Vector? startLeft, Vector? endRight, Vector? endLeft) FindTriggerCorners()
+        private (Vector?, Vector?, Vector?, Vector?) FindTriggerBounds()
         {
-            var targets = entityCache.InfoTargetEntities;
+            Vector? startMins = null;
+            Vector? startMaxs = null;
 
-            Vector? startRight = null;
-            Vector? startLeft = null;
-            Vector? endRight = null;
-            Vector? endLeft = null;
+            Vector? endMins = null;
+            Vector? endMaxs = null;
 
-            foreach (var target in targets)
+            foreach (var trigger in entityCache.Triggers)
             {
-                if (target == null || target.Entity.Name == null) continue;
+                if (trigger == null || trigger.Entity.Name == null)
+                    continue;
 
-                switch (target.Entity.Name)
+                if (IsValidStartTriggerName(trigger.Entity.Name.ToString()))
                 {
-                    case "start_right":
-                        startRight = target.AbsOrigin;
-                        break;
-                    case "start_left":
-                        startLeft = target.AbsOrigin;
-                        break;
-                    case "end_right":
-                        endRight = target.AbsOrigin;
-                        break;
-                    case "end_left":
-                        endLeft = target.AbsOrigin;
-                        break;
+                    startMins = trigger.Collision.Mins + trigger.CBodyComponent.SceneNode.AbsOrigin;
+                    startMaxs = trigger.Collision.Maxs + trigger.CBodyComponent.SceneNode.AbsOrigin;
+                    continue;
+                }
+
+                if (IsValidEndTriggerName(trigger.Entity.Name.ToString()))
+                {
+                    endMins = trigger.Collision.Mins + trigger.CBodyComponent.SceneNode.AbsOrigin;
+                    endMaxs = trigger.Collision.Maxs + trigger.CBodyComponent.SceneNode.AbsOrigin;
+                    continue;
                 }
             }
 
-            return (startRight, startLeft, endRight, endLeft);
+            return (startMins, startMaxs, endMins, endMaxs);
         }
 
         public bool IsInsideTrigger(Vector triggerPos, float triggerCollisionRadius, Vector info_tpPos)
