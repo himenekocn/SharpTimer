@@ -29,24 +29,31 @@ namespace SharpTimer
 
         async Task IsPlayerATester(string steamId64, int playerSlot)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                string response = await client.GetStringAsync(testerPersonalGifsSource);
-                JsonDocument jsonDocument = JsonDocument.Parse(response);
-                playerTimers[playerSlot].IsTester = jsonDocument.RootElement.TryGetProperty(steamId64, out JsonElement steamData);
+                string response = await httpClient.GetStringAsync(testerPersonalGifsSource);
 
-                if (playerTimers[playerSlot].IsTester)
+                using (JsonDocument jsonDocument = JsonDocument.Parse(response))
                 {
-                    if (steamData.TryGetProperty("SmolGif", out JsonElement smolGifElement))
-                    {
-                        playerTimers[playerSlot].TesterSparkleGif = smolGifElement.GetString() ?? "";
-                    }
+                    playerTimers[playerSlot].IsTester = jsonDocument.RootElement.TryGetProperty(steamId64, out JsonElement steamData);
 
-                    if (steamData.TryGetProperty("BigGif", out JsonElement bigGifElement))
+                    if (playerTimers[playerSlot].IsTester)
                     {
-                        playerTimers[playerSlot].TesterPausedGif = bigGifElement.GetString() ?? "";
+                        if (steamData.TryGetProperty("SmolGif", out JsonElement smolGifElement))
+                        {
+                            playerTimers[playerSlot].TesterSparkleGif = smolGifElement.GetString() ?? "";
+                        }
+
+                        if (steamData.TryGetProperty("BigGif", out JsonElement bigGifElement))
+                        {
+                            playerTimers[playerSlot].TesterPausedGif = bigGifElement.GetString() ?? "";
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                SharpTimerError($"Error in IsPlayerATester: {ex.Message}");
             }
         }
 

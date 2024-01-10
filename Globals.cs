@@ -14,7 +14,8 @@ namespace SharpTimer
         Dictionary<nint, TriggerPushData> triggerPushData = new Dictionary<nint, TriggerPushData>();
         private EntityCache? entityCache;
         public Dictionary<string, PlayerRecord>? SortedCachedRecords = new Dictionary<string, PlayerRecord>();
-
+        private static readonly HttpClient httpClient = new HttpClient();
+        
         public override string ModuleName => "SharpTimer";
         public override string ModuleVersion => $"0.1.9 - {new DateTime(Builtin.CompileTime, DateTimeKind.Utc)}";
         public override string ModuleAuthor => "DEAFPS https://github.com/DEAFPS/";
