@@ -124,13 +124,13 @@ namespace SharpTimer
                         RemovePlayerCollision(player);
                     }
 
-                    foreach (CCSPlayerController player in connectedPlayers.Values)
+                    foreach (CCSPlayerController iplayer in connectedPlayers.Values)
                     {
-                        if (player == null || player.IsBot || !player.IsValid) continue;
+                        if (iplayer == null || iplayer.IsBot || !iplayer.IsValid) continue;
 
-                        player.ExecuteClientCommand("sv_minrate 64000");
-                        player.ExecuteClientCommand("rate 64000");
-                        player.ExecuteClientCommand("sv_maxrate 89000");
+                        iplayer.ExecuteClientCommand("sv_minrate 64000");
+                        iplayer.ExecuteClientCommand("rate 64000");
+                        iplayer.ExecuteClientCommand("sv_maxrate 90000");
                     }
 
                     return HookResult.Continue;
@@ -160,13 +160,13 @@ namespace SharpTimer
                         if (connectMsgEnabled == true) Server.PrintToChatAll($"{msgPrefix}玩家 {ChatColors.Red}{connectedPlayer.PlayerName} {ChatColors.White}拔出服务器!");
                     }
 
-                    foreach (CCSPlayerController player in connectedPlayers.Values)
+                    foreach (CCSPlayerController iplayer in connectedPlayers.Values)
                     {
-                        if (player == null || player.IsBot || !player.IsValid) continue;
+                        if (iplayer == null || iplayer.IsBot || !iplayer.IsValid) continue;
 
-                        player.ExecuteClientCommand("sv_minrate 64000");
-                        player.ExecuteClientCommand("rate 64000");
-                        player.ExecuteClientCommand("sv_maxrate 89000");
+                        iplayer.ExecuteClientCommand("sv_minrate 64000");
+                        iplayer.ExecuteClientCommand("rate 64000");
+                        iplayer.ExecuteClientCommand("sv_maxrate 89000");
                     }
 
                     return HookResult.Continue;
