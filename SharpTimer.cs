@@ -37,7 +37,9 @@ namespace SharpTimer
             RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
             {
                 Server.ExecuteCommand("sv_cheats 0");
-                    Svcheats.SetValue(false);
+                Svcheats.SetValue(false);
+                Server.ExecuteCommand("sv_hibernate_when_empty 0");
+                
                 var player = @event.Userid;
 
                 if (player.IsBot || !player.IsValid)
@@ -99,11 +101,13 @@ namespace SharpTimer
                     Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
                     Server.ExecuteCommand("sv_cheats 0");
                     Svcheats.SetValue(false);
+                    Server.ExecuteCommand("sv_hibernate_when_empty 0");
                 });
 
                 var forceanticheats = AddTimer(5.0f, () =>
                 {
                     Server.ExecuteCommand("sv_cheats 0");
+                    Server.ExecuteCommand("sv_hibernate_when_empty 0");
                     Svcheats.SetValue(false);
                 }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
 
@@ -143,7 +147,7 @@ namespace SharpTimer
                         if (iplayer == null || iplayer.IsBot || !iplayer.IsValid) continue;
 
                         iplayer.ExecuteClientCommand("sv_minrate 64000");
-                        iplayer.ExecuteClientCommand("rate 64000");
+                        iplayer.ExecuteClientCommand("rate 65000");
                         iplayer.ExecuteClientCommand("sv_maxrate 90000");
                     }
 
@@ -560,7 +564,6 @@ namespace SharpTimer
 
             if(player.Pawn.Value.MoveType == MoveType_t.MOVETYPE_NOCLIP)
                 return;
-
 
             int currentTicks = playerTimers[player.Slot].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);
