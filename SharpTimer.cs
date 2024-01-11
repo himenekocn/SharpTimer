@@ -558,6 +558,10 @@ namespace SharpTimer
 
             if (useTriggers) SharpTimerDebug($"Stopping Timer for {player.PlayerName}");
 
+            if(player.Pawn.Value.MoveType == MoveType_t.MOVETYPE_NOCLIP)
+                return;
+
+
             int currentTicks = playerTimers[player.Slot].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);
 
