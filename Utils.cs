@@ -512,6 +512,9 @@ namespace SharpTimer
                 Server.ExecuteCommand("sv_autoexec_mapname_cfg 0");
                 Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
 
+                Server.ExecuteCommand("sv_cheats 0");
+                Svcheats.SetValue(false);
+
                 //delay custom_exec so it executes after map exec
                 SharpTimerDebug("Creating custom_exec 2sec delay");
                 var custom_exec_delay = AddTimer(2.0f, () =>
@@ -536,6 +539,9 @@ namespace SharpTimer
         {
             Server.ExecuteCommand($"execifexists SharpTimer/config.cfg");
             if (srEnabled == true) ServerRecordADtimer();
+
+            Server.ExecuteCommand("sv_cheats 0");
+            Svcheats.SetValue(false);
 
             currentMapName = Server.MapName;
 

@@ -104,6 +104,8 @@ namespace SharpTimer
 
         public string? testerPersonalGifsSource = "https://mirror.ghproxy.com/https://raw.githubusercontent.com/DEAFPS/SharpTimer/main/remote_data/tester_bling.json";
 
+        public ConVar Svcheats = ConVar.Find("sv_cheats");
+
         public struct WeaponSpeedStats
         {
             public double Running { get; }

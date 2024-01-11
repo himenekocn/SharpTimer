@@ -64,6 +64,13 @@ namespace SharpTimer
             {
                 if (player == null) continue;
 
+                if(player.Pawn.Value.MoveType == MoveType_t.MOVETYPE_NOCLIP)
+                {
+                    player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
+                    player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} 禁止NOCLIP飞行");
+                    playerTimers[player.Slot].IsTimerRunning = false;
+                }
+
                 if (playerTimers.TryGetValue(player.Slot, out PlayerTimerInfo playerTimer) && IsAllowedPlayer(player))
                 {
                     if (!IsAllowedPlayer(player))

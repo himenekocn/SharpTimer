@@ -35,6 +35,8 @@ namespace SharpTimer
 
             RegisterEventHandler<EventPlayerConnectFull>((@event, info) =>
             {
+                Server.ExecuteCommand("sv_cheats 0");
+                    Svcheats.SetValue(false);
                 var player = @event.Userid;
 
                 if (player.IsBot || !player.IsValid)
@@ -62,7 +64,7 @@ namespace SharpTimer
                     if (removeLegsEnabled == true) player.PlayerPawn.Value.Render = Color.FromArgb(254, 254, 254, 254);
 
                     player.ExecuteClientCommand("sv_minrate 64000");
-                    player.ExecuteClientCommand("rate 64000");
+                    player.ExecuteClientCommand("rate 80000");
                     player.ExecuteClientCommand("sv_maxrate 90000");
 
                     //PlayerSettings
@@ -94,7 +96,15 @@ namespace SharpTimer
                 {
                     SharpTimerDebug("Re-Executing SharpTimer/custom_exec");
                     Server.ExecuteCommand("execifexists SharpTimer/custom_exec.cfg");
+                    Server.ExecuteCommand("sv_cheats 0");
+                    Svcheats.SetValue(false);
                 });
+
+                var forceanticheats = AddTimer(5.0f, () =>
+                {
+                    Server.ExecuteCommand("sv_cheats 0");
+                    Svcheats.SetValue(false);
+                }, REPEAT|STOP_ON_MAPCHANGE);
 
                 foreach (CCSPlayerController player in connectedPlayers.Values)
                 {
@@ -109,6 +119,9 @@ namespace SharpTimer
 
             RegisterEventHandler<EventPlayerSpawned>((@event, info) =>
             {
+                Server.ExecuteCommand("sv_cheats 0");
+                Svcheats.SetValue(false);
+
                 if (@event.Userid == null) return HookResult.Continue;
 
                 var player = @event.Userid;
@@ -139,6 +152,9 @@ namespace SharpTimer
 
             RegisterEventHandler<EventPlayerDisconnect>((@event, info) =>
             {
+                Server.ExecuteCommand("sv_cheats 0");
+                Svcheats.SetValue(false);
+
                 var player = @event.Userid;
 
                 if (player.IsBot || !player.IsValid)
@@ -458,7 +474,11 @@ namespace SharpTimer
 
         public void OnTimerStart(CCSPlayerController? player, int bonusX = 0)
         {
+            Server.ExecuteCommand("sv_cheats 0");
+            Svcheats.SetValue(false);
             if (!IsAllowedPlayer(player)) return;
+
+            player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
 
             if (bonusX != 0)
             {
@@ -536,6 +556,16 @@ namespace SharpTimer
 
             int currentTicks = playerTimers[player.Slot].TimerTicks;
             int previousRecordTicks = GetPreviousPlayerRecord(player);
+
+            if(currentTicks < 300)
+            {
+                player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} 保存错误: 时间过短，疑似作弊");
+                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.DarkRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
+                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.DarkRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
+                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.DarkRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
+                playerTimers[player.Slot].IsTimerRunning = false;
+                return;
+            }
 
             SavePlayerTime(player, currentTicks);
             if (useMySQL == true) _ = SavePlayerTimeToDatabase(player, currentTicks, player.SteamID.ToString(), player.PlayerName, player.Slot);
