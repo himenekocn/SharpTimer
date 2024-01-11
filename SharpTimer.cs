@@ -571,9 +571,9 @@ namespace SharpTimer
             if(currentTicks < 300)
             {
                 player.PrintToChat(msgPrefix + $"{ChatColors.LightRed} 保存错误: 时间过短，疑似作弊");
-                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.DarkRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
-                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.DarkRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
-                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.DarkRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
+                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.LightRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
+                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.LightRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
+                Server.PrintToChatAll(msgPrefix + $"{primaryChatColor}{player.PlayerName} {ChatColors.White}完成地图 用时: {primaryChatColor}[{FormatTime(currentTicks)}]{ChatColors.LightRed} 疑似作弊 记录不给予保存 玩家可加群进行举报");
                 playerTimers[player.Slot].IsTimerRunning = false;
                 return;
             }
