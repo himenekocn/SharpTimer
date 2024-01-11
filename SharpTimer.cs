@@ -67,8 +67,7 @@ namespace SharpTimer
                     if (removeLegsEnabled == true) player.PlayerPawn.Value.Render = Color.FromArgb(254, 254, 254, 254);
 
                     player.ExecuteClientCommand("sv_minrate 64000");
-                    player.ExecuteClientCommand("rate 80000");
-                    player.ExecuteClientCommand("sv_maxrate 90000");
+                    player.ExecuteClientCommand("sv_minrate 32000");
 
                     //PlayerSettings
                     if (useMySQL == true)
@@ -109,17 +108,14 @@ namespace SharpTimer
                     Server.ExecuteCommand("sv_cheats 0");
                     Server.ExecuteCommand("sv_hibernate_when_empty 0");
                     Svcheats.SetValue(false);
-                    Server.ExecuteCommand("sv_minrate 64000");
-                    Server.ExecuteCommand("sv_minrate 32000");
                 }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
 
                 foreach (CCSPlayerController player in connectedPlayers.Values)
                 {
                     if (player == null || player.IsBot || !player.IsValid) continue;
 
+                    player.ExecuteClientCommand("sv_minrate 64000");
                     player.ExecuteClientCommand("sv_minrate 32000");
-                    player.ExecuteClientCommand("rate 64000");
-                    player.ExecuteClientCommand("sv_maxrate 89000");
                 }
                 return HookResult.Continue;
             });
@@ -148,9 +144,8 @@ namespace SharpTimer
                     {
                         if (iplayer == null || iplayer.IsBot || !iplayer.IsValid) continue;
 
+                        iplayer.ExecuteClientCommand("sv_minrate 64000");
                         iplayer.ExecuteClientCommand("sv_minrate 32000");
-                        iplayer.ExecuteClientCommand("rate 65000");
-                        iplayer.ExecuteClientCommand("sv_maxrate 90000");
                     }
 
                     return HookResult.Continue;
@@ -187,9 +182,8 @@ namespace SharpTimer
                     {
                         if (iplayer == null || iplayer.IsBot || !iplayer.IsValid) continue;
 
+                        iplayer.ExecuteClientCommand("sv_minrate 64000");
                         iplayer.ExecuteClientCommand("sv_minrate 32000");
-                        iplayer.ExecuteClientCommand("rate 64000");
-                        iplayer.ExecuteClientCommand("sv_maxrate 89000");
                     }
 
                     return HookResult.Continue;
