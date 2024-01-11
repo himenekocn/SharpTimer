@@ -4,7 +4,6 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API.Modules.Timers;
 using System.Drawing;
 using System.Runtime.InteropServices;
 
@@ -105,7 +104,7 @@ namespace SharpTimer
                 {
                     Server.ExecuteCommand("sv_cheats 0");
                     Svcheats.SetValue(false);
-                }, REPEAT|STOP_ON_MAPCHANGE);
+                }, TimerFlags.REPEAT | TimerFlags.STOP_ON_MAPCHANGE);
 
                 foreach (CCSPlayerController player in connectedPlayers.Values)
                 {
@@ -479,7 +478,8 @@ namespace SharpTimer
             Svcheats.SetValue(false);
             if (!IsAllowedPlayer(player)) return;
 
-            player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
+            if(player.Pawn.Value.MoveType == MoveType_t.MOVETYPE_NOCLIP)
+                return;
 
             if (bonusX != 0)
             {
@@ -494,6 +494,7 @@ namespace SharpTimer
                 playerTimers[player.Slot].IsBonusTimerRunning = true;
                 playerTimers[player.Slot].BonusTimerTicks = 0;
                 playerTimers[player.Slot].BonusStage = bonusX;
+                player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
             }
             else
             {
@@ -508,6 +509,7 @@ namespace SharpTimer
                 playerTimers[player.Slot].IsBonusTimerRunning = false;
                 playerTimers[player.Slot].BonusTimerTicks = 0;
                 playerTimers[player.Slot].BonusStage = bonusX;
+                player.Pawn.Value.MoveType = MoveType_t.MOVETYPE_WALK;
             }
 
         }
